@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+ALE_LUA_VERSION="${ALE_LUA_VERSION:-lua52}"
+BUILD_TYPE="${BUILD_TYPE:-Release}"
+BUILD_JOBS="${BUILD_JOBS:-4}"
+
+case "$ALE_LUA_VERSION" in
+  luajit|lua51|lua52|lua53|lua54) ;;
+  *) echo "Invalid ALE_LUA_VERSION: $ALE_LUA_VERSION" >&2; exit 2 ;;
+esac
+
+test -d /azerothcore/.git
+mkdir -p /azerothcore/modules
+
+modules=(
+  "mod-playerbots;https://github.com/mod-playerbots/mod-playerbots.git"
+  "mod-ah-bot-plus;https://github.com/NathanHandley/mod-ah-bot-plus.git"
+  "mod-autobalance;https://github.com/azerothcore/mod-autobalance.git"
+  "mod-aoe-loot;https://github.com/azerothcore/mod-aoe-loot.git"
+  "mod-learn-spells;https://github.com/azerothcore/mod-learn-spells.git"
+  "mod-solo-lfg;https://github.com/azerothcore/mod-solo-lfg.git"
+  "mod-challenge-modes;https://github.com/ZhengPeiRu21/mod-challenge-modes.git"
+  "mod-player-bot-level-brackets;https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git"
+  "mod-junk-to-gold;https://github.com/kadeshar/mod-junk-to-gold.git"
+  "mod-rare-drops;https://github.com/StraysFromPath/mod-rare-drops.git"
+  "mod-transmog;https://github.com/azerothcore/mod-transmog.git"
+  "mod-reagent-bank-account;https://github.com/Brian-Aldridge/mod-reagent-bank-account.git"
+  "mod-daily-reset;https://github.com/binboupan/mod-daily-reset.git"
+  "mod-mount-scaling;https://github.com/claudevandort/mod-mount-scaling.git"
+  "mod-ale;https://github.com/azerothcore/mod-ale.git"
+  "mod-quest-loot-party;https://github.com/pangolp/mod-quest-loot-party.git"
+  "mod-TimeIsTime;https://github.com/dunjeon/mod-TimeIsTime.git"
+  "mod-boss-announcer;https://github.com/azerothcore/mod-boss-announcer.git"
+  "mod-auto-revive;https://github.com/azerothcore/mod-auto-revive.git"
+  "mod-duel-reset;https://github.com/azerothcore/mod-duel-reset.git"
+  "mod-progression-system;https://github.com/azerothcore/mod-progression-system.git"
+  "NoProfessionLimit;https://github.com/AlsoNotMehh/NoProfessionLimit.git"
+  "mod-no-hearthstone-cooldown;https://github.com/BytesGalore/mod-no-hearthstone-cooldown.git"
+  "mod-autofish;https://github.com/Flerp/mod-autofish.git"
+  "lua-battlepass;https://github.com/Shonik/lua-battlepass.git"
+  "mod-skip-dk-starting-area;https://github.com/d23monkey/mod-skip-dk-starting-area.git"
+  "mod-gunship-skip;https://github.com/BlaMacfly/mod-gunship-skip.git"
+  "portals-in-all-capitals;https://github.com/azerothcore/portals-in-all-capitals.git"
+  "mod-gain-honor-guard;https://github.com/azerothcore/mod-gain-honor-guard.git"
+)
+
+for item in "${modules[@]}"; do
+  IFS=';' read -r name url <<<"$item"
+  git clone --depth 1 "$url" "/azerothcore/modules/$name"
+done
+
+# Compatibility patches retained from the Vagrant implementation.
+challenge=/azerothcore/modules/mod-challenge-modes/src/ChallengeModes.cpp
+if [[ -f "$challenge" ]]; then
+  sed -i 's/bool \/\*applySickness\*\/) override/bool\& \/\*applySickness\*\/) override/' "$challenge"
+fi
+
+reagent=/azerothcore/modules/mod-reagent-bank-account/src/ReagentBank_loader.cpp
+if [[ -f "$reagent" ]]; then
+  sed -i 's/void Addmod_reagent_bankScripts()/void Addmod_reagent_bank_accountScripts()/' "$reagent"
+fi
+
+profession=/azerothcore/modules/NoProfessionLimit/src/NoProfessionLimit.cpp
+if [[ -f "$profession" ]]; then
+  sed -i 's/PLAYERHOOK_ON_SET_SKILL/PLAYERHOOK_ON_UPDATE_SKILL/g; s/void OnPlayerSetSkill/void OnPlayerUpdateSkill/g' "$profession"
+fi
+
+# mod-rare-drops still uses the former PlayerScript login hook name. Current
+# AzerothCore exposes OnPlayerLogin(Player*), so OnLogin can no longer override
+# a virtual member and makes the complete module build fail.
+rare_drops=/azerothcore/modules/mod-rare-drops/src/MyPlayer.cpp
+if [[ -f "$rare_drops" ]]; then
+  sed -i 's/void OnLogin(Player\* player)/void OnPlayerLogin(Player* player)/g' "$rare_drops"
+fi
+
+# Its loader still carries the skeleton template symbol, while the module
+# generator expects a function derived from the directory name.
+rare_drops_loader=/azerothcore/modules/mod-rare-drops/src/MP_loader.cpp
+if [[ -f "$rare_drops_loader" ]]; then
+  sed -i 's/void Addskeleton_moduleScripts()/void Addmod_rare_dropsScripts()/g' "$rare_drops_loader"
+fi
+
+while IFS= read -r -d '' reagent_sql; do
+  sed -i 's/mechanic_immune_mask/CreatureImmunitiesId/g' "$reagent_sql"
+done < <(find /azerothcore/modules/mod-reagent-bank-account/data/sql -type f -name '*.sql' -print0 2>/dev/null)
+
+python3 /usr/local/bin/patch-gunship.py
+
+mkdir -p /azerothcore/build /azerothcore/env/dist
+cd /azerothcore/build
+
+cmake .. \
+  -DCMAKE_INSTALL_PREFIX=/azerothcore/env/dist \
+  -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  -DBoost_USE_STATIC_LIBS=ON \
+  -DAPPS_BUILD=all \
+  -DTOOLS_BUILD=all \
+  -DSCRIPTS=static \
+  -DMODULES=static \
+  -DMODULE_MOD_PLAYERBOTS=static \
+  -DLUA_VERSION="$ALE_LUA_VERSION" \
+  -DWITH_WARNINGS=ON
+
+cmake --build . --parallel "$BUILD_JOBS"
+cmake --install .
+
+mkdir -p /azerothcore/env/dist/bin/lua_scripts
+if [[ -d /azerothcore/modules/lua-battlepass/lua_scripts ]]; then
+  cp -a /azerothcore/modules/lua-battlepass/lua_scripts/. /azerothcore/env/dist/bin/lua_scripts/
+fi
+
+{
+  printf 'core\t%s\t%s\n' "$(git -C /azerothcore rev-parse HEAD)" "$(git -C /azerothcore log -1 --format=%cI)"
+  for module_dir in /azerothcore/modules/*; do
+    [[ -d "$module_dir/.git" ]] || continue
+    printf '%s\t%s\t%s\n' \
+      "$(basename "$module_dir")" \
+      "$(git -C "$module_dir" rev-parse HEAD)" \
+      "$(git -C "$module_dir" log -1 --format=%cI)"
+  done
+} > /azerothcore/env/dist/build-manifest.tsv
+
+# SQL is needed by dbimport, Git object databases are not.
+find /azerothcore/modules -type d -name .git -prune -exec rm -rf {} +
+
+test -x /azerothcore/env/dist/bin/authserver
+test -x /azerothcore/env/dist/bin/worldserver
+test -x /azerothcore/env/dist/bin/dbimport

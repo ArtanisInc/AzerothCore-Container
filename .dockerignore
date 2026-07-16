@@ -1,0 +1,9 @@
+.git
+.omx
+.agents
+.codex
+.env
+backups
+data
+logs
+README.md
