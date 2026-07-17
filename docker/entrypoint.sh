@@ -26,7 +26,7 @@ if [[ $(id -u) -eq 0 ]]; then
   chown -R acore:acore "$CONF_DIR"
   chown acore:acore /azerothcore/env/dist/logs /azerothcore/env/dist/temp
 fi
-cp -an "$REF_DIR/." "$CONF_DIR/"
+cp -a --update=none "$REF_DIR/." "$CONF_DIR/"
 
 case "${ACORE_COMPONENT:-}" in
   dbimport)    wait_for_file "$CONF_DIR/.database-preflight.ready" "SQL world-ID precheck" ;;

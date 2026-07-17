@@ -57,6 +57,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=build --chown=acore:acore /azerothcore/env/dist/etc/ /azerothcore/env/ref/etc/
 COPY --from=build --chown=acore:acore /azerothcore/env/dist/build-manifest.tsv /azerothcore/env/dist/build-manifest.tsv
 COPY --from=build --chown=acore:acore --chmod=755 /azerothcore/apps/docker/entrypoint.sh /azerothcore/upstream-entrypoint.sh
+RUN sed -i 's/cp -rnv /cp -rv --update=none /; s/cp -vn /cp -v --update=none /' /azerothcore/upstream-entrypoint.sh
 COPY --chown=acore:acore --chmod=755 docker/entrypoint.sh /azerothcore/entrypoint.sh
 
 USER root
@@ -96,6 +97,7 @@ COPY --from=build --chown=acore:acore /azerothcore/modules /azerothcore/modules
 CMD ["dbimport"]
 
 FROM db-import AS operations
+ENV ACORE_COMPONENT=operations
 COPY --chown=acore:acore docker/tools/ /azerothcore/tools/
 CMD ["python3", "/azerothcore/tools/health.py"]
 

@@ -9,7 +9,7 @@ echo
 echo "==== Container resources ===="
 docker compose stats --no-stream database authserver worldserver || true
 echo
-docker compose run --rm --no-deps --entrypoint python3 operations /azerothcore/tools/diagnose.py
+docker compose --profile tools run --rm --no-deps -T --entrypoint python3 operations /azerothcore/tools/diagnose.py
 echo
 echo "==== Recent auth/world logs ===="
 docker compose logs --tail=120 authserver worldserver

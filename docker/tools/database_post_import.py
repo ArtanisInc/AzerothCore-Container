@@ -7,6 +7,7 @@ import os
 import time
 from pathlib import Path
 
+from admin import create_account, set_gm
 from common import (
     MODULES_DIR,
     ToolError,
@@ -196,6 +197,16 @@ def ensure_better_professions_density() -> None:
         print(f"[OK] Better Professions: {len(pools)} {resource} pools set to x{multiplier}")
 
 
+def ensure_soap_account() -> None:
+    """Keep the database account used by SOAP aligned with Compose secrets."""
+    username = os.environ.get("SOAP_USER", "").strip()
+    password = os.environ.get("SOAP_PASSWORD", "")
+    if not username or not password:
+        raise ToolError("SOAP_USER and SOAP_PASSWORD are required")
+    create_account(username, password)
+    set_gm(username, 3, -1)
+
+
 def main() -> int:
     POST_IMPORT_READY.unlink(missing_ok=True)
     for elapsed in range(1800):
@@ -256,6 +267,7 @@ def main() -> int:
     )
     ensure_battlepass_npc()
     ensure_better_professions_density()
+    ensure_soap_account()
 
     try:
         mysql(

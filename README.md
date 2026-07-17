@@ -213,9 +213,9 @@ recommandée, compatible avec les schémas SHA1 et SRP6, est :
 Sans la compatibilité `podman-docker`, utilisez directement :
 
 ```bash
-podman compose run --rm operations \
+podman compose --profile tools run --rm operations \
   python3 /azerothcore/tools/admin.py create-account admin 'MOT_DE_PASSE'
-podman compose run --rm operations \
+podman compose --profile tools run --rm operations \
   python3 /azerothcore/tools/admin.py set-gm admin 3 -1
 ```
 
@@ -319,7 +319,9 @@ Créez son personnage avec le client WoW, récupérez son GUID, puis :
 ```
 
 Le script vérifie les GUID, active le vendeur dans la configuration persistante,
-puis exécute `.ahbot reload` et trois mises à jour via SOAP.
+puis exécute `.ahbot reload` et trois mises à jour via SOAP. Le compte technique
+SOAP défini dans `.env` est créé automatiquement avec les droits requis pendant
+l'initialisation des bases.
 
 ## Sauvegarde et restauration
 
@@ -369,7 +371,7 @@ Sous Podman sans `podman-docker` :
 ```bash
 podman compose ps
 podman compose logs --tail=200 authserver worldserver
-podman compose run --rm operations python3 /azerothcore/tools/diagnose.py
+podman compose --profile tools run --rm operations python3 /azerothcore/tools/diagnose.py
 ```
 
 ### Échec de compilation
