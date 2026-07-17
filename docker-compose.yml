@@ -178,6 +178,7 @@ services:
       <<: *acore-build
       target: authserver
     restart: unless-stopped
+    stop_grace_period: 30s
     env_file: [docker/acore.env]
     environment:
       <<: *acore-environment
@@ -204,6 +205,7 @@ services:
       <<: *acore-build
       target: worldserver
     restart: unless-stopped
+    stop_grace_period: 2m
     stdin_open: true
     tty: true
     env_file: [docker/acore.env]

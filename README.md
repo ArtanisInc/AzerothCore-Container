@@ -261,6 +261,9 @@ make clean-logs  # supprimer les fichiers de logs applicatifs
 make update      # reconstruction complète depuis les sources distantes
 ```
 
+Compose laisse jusqu'à deux minutes à `worldserver` pour sauvegarder son état et
+fermer proprement ses connexions avant de forcer son arrêt.
+
 Commandes Docker Compose directes :
 
 ```bash
