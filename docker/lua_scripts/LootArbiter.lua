@@ -326,3 +326,5 @@ end
 -- [8] REGISTRATIONS
 RegisterPlayerEvent(18, OnPlayerChat)
 RegisterPlayerEvent(56, OnGroupRollReward) -- PLAYER_EVENT_ON_GROUP_ROLL_REWARD
+
+print("[ALE] Loot Arbiter enabled for group-roll rewards")

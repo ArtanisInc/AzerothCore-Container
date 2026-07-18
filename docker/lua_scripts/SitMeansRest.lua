@@ -64,3 +64,5 @@ local function OnEmote(event, player, textEmote, emoteNum, guid)
 end
 
 RegisterPlayerEvent(24, OnEmote)
+
+print("[ALE] SitMeansRest enabled via /sit")

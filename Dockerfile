@@ -108,6 +108,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /data
 COPY --from=source /azerothcore/apps /azerothcore/apps
+RUN sed -i \
+      's|^source "$AC_PATH_INSTALLER/includes/modules-manager/modules.sh"$|[[ -f "$AC_PATH_INSTALLER/includes/modules-manager/modules.sh" ]] \&\& source "$AC_PATH_INSTALLER/includes/modules-manager/modules.sh"|' \
+      /azerothcore/apps/installer/includes/functions.sh
 ENV DATAPATH=/data
 VOLUME /data
 CMD ["bash", "-c", "source /azerothcore/apps/installer/includes/functions.sh && inst_download_client_data"]
