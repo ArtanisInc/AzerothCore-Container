@@ -1,8 +1,8 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot et 29 modules additionnels.
-
+AzerothCore WoW 3.3.5a, la branche Playerbot, 29 modules additionnels et trois
+scripts Lua personnalisés.
 
 ## Prérequis
 
@@ -62,6 +62,16 @@ Les services one-shot affichés comme `Exited (0)` ont terminé normalement. Les
 services permanents `database`, `authserver` et `worldserver` doivent être
 `healthy` après l'initialisation. La première création des Playerbots peut
 prendre plusieurs minutes.
+
+Validez ensuite l'installation complète :
+
+```bash
+make health
+make diagnose
+```
+
+`make health` doit se terminer par `Healthcheck: OK`. Sous Podman, ces scripts
+fonctionnent avec le paquet de compatibilité `podman-docker`.
 
 ## Architecture
 
@@ -138,18 +148,20 @@ reproductible par `docker/build-source.sh` et le `Dockerfile`.
 
 ## Scripts Lua inclus
 
-- [`starter_boost.lua`](https://github.com/Kyroth88/ale-scripts/blob/main/starter_boost.lua)
-  permet aux personnages de niveau 10 maximum de réclamer en jeu un équipement
-  de départ, quatre sacs et 250 pièces d'or avec la commande `.starterboost`.
-- [`SitMeansRest.lua`](https://github.com/Brytenwally/SitMeansRest)
-  applique une régénération de 20 secondes avec `/sit`, uniquement hors combat,
-  et l'annule dès que le personnage se déplace.
-- [`LootArbiter.lua`](https://github.com/Brytenwally/Loot-Arbiter)
-  attribue le butin remporté par un jet de groupe au membre pour lequel il
-  représente la meilleure amélioration. L'intégration désactive volontairement
-  le hook général d'obtention d'objet pour éviter de redistribuer achats,
-  courriers et récompenses hors jet de groupe. La commande `.lootspec` affiche
-  la spécialisation détectée.
+| Script | Activation | Fonction |
+|---|---|---|
+| [`starter_boost.lua`](https://github.com/Kyroth88/ale-scripts/blob/main/starter_boost.lua) | `.starterboost` | Offre aux personnages de niveau 10 maximum un équipement de départ, quatre sacs et 250 pièces d'or. |
+| [`SitMeansRest.lua`](https://github.com/Brytenwally/SitMeansRest) | `/sit` hors combat | Applique une régénération de 20 secondes, annulée dès que le personnage se déplace. |
+| [`LootArbiter.lua`](https://github.com/Brytenwally/Loot-Arbiter) | Automatique après un jet de groupe ; diagnostic avec `.lootspec` | Attribue le butin au membre pour lequel il représente la meilleure amélioration. Le hook général d'obtention d'objet est désactivé afin de ne pas redistribuer les achats, courriers et récompenses hors jet de groupe. |
+
+Les trois scripts sont intégrés à l'image `worldserver`. Leur chargement peut
+être contrôlé dans les journaux avec :
+
+```bash
+docker compose logs worldserver | grep '\[ALE\]'
+```
+
+Sous Podman, remplacez `docker compose` par `podman compose`.
 
 ### Gain Honor Guard
 
@@ -370,6 +382,19 @@ sauvegarde avant :
 make backup
 make update
 ```
+
+Avec Podman :
+
+```bash
+./scripts/backup-db.sh
+podman compose build --pull --no-cache
+podman compose down
+podman compose up -d
+```
+
+La recréation des conteneurs après la reconstruction garantit l'utilisation
+des nouvelles images. Les volumes de base de données et de données client sont
+conservés par `podman compose down`.
 
 Les dépendances externes sont encore suivies par branches. Pour une plateforme
 de production, épinglez le core et chaque module sur un commit vérifié.
