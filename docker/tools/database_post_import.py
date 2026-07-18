@@ -22,7 +22,6 @@ from common import (
 STATE_FILE = Path(os.getenv("DATABASE_MIGRATION_STATE_FILE", "/azerothcore/env/dist/etc/.database-preflight.sha256"))
 DBIMPORT_READY = STATE_FILE.with_name(".db-import.ready")
 POST_IMPORT_READY = STATE_FILE.with_name(".database-post-import.ready")
-PARAGON_SQL_DIR = Path("/azerothcore/lua-sql/paragon")
 
 # Resource template IDs used by Upload Academy's MIT-licensed Better
 # Professions pack. We only port its spawn-density behavior; quests and Lua are
@@ -208,37 +207,6 @@ def ensure_soap_account() -> None:
     set_gm(username, 3, -1)
 
 
-def ensure_paragon_schema() -> None:
-    """Apply the upstream Paragon migrations in their required order."""
-    migrations = tuple(PARAGON_SQL_DIR.glob("0[2-6]_*.sql"))
-    migrations = tuple(sorted(migrations))
-    if len(migrations) != 5:
-        raise ToolError(f"Paragon: expected 5 migrations in {PARAGON_SQL_DIR}, found {len(migrations)}")
-    for migration in migrations:
-        import_sql("acore_ale", migration, "Paragon")
-    mysql(
-        "UPDATE paragon_config SET value='80' "
-        "WHERE field='MINIMUM_LEVEL_FOR_PARAGON_XP' AND value='0'",
-        "acore_ale",
-    )
-    required = (
-        "paragon_config",
-        "paragon_config_category",
-        "paragon_config_statistic",
-        "paragon_config_experience_creature",
-        "paragon_config_experience_achievement",
-        "paragon_config_experience_skill",
-        "paragon_config_experience_quest",
-        "character_paragon",
-        "account_paragon",
-        "character_paragon_stats",
-    )
-    missing = [table for table in required if not table_exists("acore_ale", table)]
-    if missing:
-        raise ToolError(f"Paragon tables missing: {', '.join(missing)}")
-    print("[OK] Paragon schema present; progression starts at level 80")
-
-
 def main() -> int:
     POST_IMPORT_READY.unlink(missing_ok=True)
     for elapsed in range(1800):
@@ -299,7 +267,6 @@ def main() -> int:
     )
     ensure_battlepass_npc()
     ensure_better_professions_density()
-    ensure_paragon_schema()
     ensure_soap_account()
 
     try:

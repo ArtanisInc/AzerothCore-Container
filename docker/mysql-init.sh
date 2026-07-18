@@ -23,14 +23,12 @@ CREATE DATABASE IF NOT EXISTS acore_auth CHARACTER SET utf8mb4 COLLATE utf8mb4_u
 CREATE DATABASE IF NOT EXISTS acore_characters CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS acore_world CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE DATABASE IF NOT EXISTS acore_playerbots CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-CREATE DATABASE IF NOT EXISTS acore_ale CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS '${DB_USER}'@'%' IDENTIFIED BY '${password_sql}';
 ALTER USER '${DB_USER}'@'%' IDENTIFIED BY '${password_sql}';
 GRANT ALL PRIVILEGES ON acore_auth.* TO '${DB_USER}'@'%';
 GRANT ALL PRIVILEGES ON acore_characters.* TO '${DB_USER}'@'%';
 GRANT ALL PRIVILEGES ON acore_world.* TO '${DB_USER}'@'%';
 GRANT ALL PRIVILEGES ON acore_playerbots.* TO '${DB_USER}'@'%';
-GRANT ALL PRIVILEGES ON acore_ale.* TO '${DB_USER}'@'%';
 FLUSH PRIVILEGES;
 SQL
 

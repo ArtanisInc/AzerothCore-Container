@@ -100,7 +100,6 @@ CMD ["dbimport"]
 FROM db-import AS operations
 ENV ACORE_COMPONENT=operations
 COPY --chown=acore:acore docker/tools/ /azerothcore/tools/
-COPY --chown=acore:acore docker/lua_scripts/paragon/sql/ /azerothcore/lua-sql/paragon/
 CMD ["python3", "/azerothcore/tools/health.py"]
 
 FROM docker.io/library/ubuntu:${UBUNTU_VERSION} AS client-data

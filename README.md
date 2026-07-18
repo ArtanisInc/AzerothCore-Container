@@ -68,7 +68,7 @@ prendre plusieurs minutes.
 | Service | Rôle | Persistance |
 |---|---|---|
 | `database` | MySQL 8.4 | volume `database` |
-| `database-init` | création des cinq bases et de l'utilisateur applicatif | one-shot |
+| `database-init` | création des quatre bases et de l'utilisateur applicatif | one-shot |
 | `database-preflight` | détection des collisions SQL de Portals/Rare Drops | one-shot |
 | `client-data` | téléchargement des DBC/maps/vmaps/mmaps | volume `client-data` |
 | `db-import` | migrations du core et des modules | one-shot |
@@ -150,14 +150,6 @@ reproductible par `docker/build-source.sh` et le `Dockerfile`.
   le hook général d'obtention d'objet pour éviter de redistribuer achats,
   courriers et récompenses hors jet de groupe. La commande `.lootspec` affiche
   la spécialisation détectée.
-- [`Paragon Anniversary`](https://github.com/Grim-Batol/Paragon-Anniversary)
-  ajoute une progression persistante après le niveau maximal. Les scripts
-  serveur et la base `acore_ale` sont installés automatiquement. L'interface
-  client expérimentale n'est pas distribuée par ce projet : la progression
-  fonctionne côté serveur, mais l'attribution interactive des points exige
-  cette interface. Le système se configure dans `acore_ale.paragon_config` et
-  commence ici au niveau 80. La commande de test non protégée de l'amont est
-  supprimée.
 
 ### Gain Honor Guard
 

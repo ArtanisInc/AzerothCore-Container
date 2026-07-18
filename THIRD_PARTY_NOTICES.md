@@ -1,14 +1,5 @@
 # Third-party notices
 
-## Paragon Anniversary
-
-`docker/lua_scripts/paragon` is derived from **Paragon Anniversary** revision
-`a3cb1bb5d9b3983154b9e7a71459b199fcea0d9f`:
-
-- Source: <https://github.com/Grim-Batol/Paragon-Anniversary>
-- License: GNU Affero General Public License v3.0
-- Complete license text: `docker/lua_scripts/paragon/LICENSE`
-
 ## SitMeansRest and Loot Arbiter
 
 `docker/lua_scripts/SitMeansRest.lua` and
