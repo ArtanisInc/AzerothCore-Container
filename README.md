@@ -141,6 +141,15 @@ reproductible par `docker/build-source.sh` et le `Dockerfile`.
 - [`starter_boost.lua`](https://github.com/Kyroth88/ale-scripts/blob/main/starter_boost.lua)
   permet aux personnages de niveau 10 maximum de réclamer en jeu un équipement
   de départ, quatre sacs et 250 pièces d'or avec la commande `.starterboost`.
+- [`SitMeansRest.lua`](https://github.com/Brytenwally/SitMeansRest)
+  applique une régénération de 20 secondes avec `/sit`, uniquement hors combat,
+  et l'annule dès que le personnage se déplace.
+- [`LootArbiter.lua`](https://github.com/Brytenwally/Loot-Arbiter)
+  attribue le butin remporté par un jet de groupe au membre pour lequel il
+  représente la meilleure amélioration. L'intégration désactive volontairement
+  le hook général d'obtention d'objet pour éviter de redistribuer achats,
+  courriers et récompenses hors jet de groupe. La commande `.lootspec` affiche
+  la spécialisation détectée.
 
 ### Gain Honor Guard
 
