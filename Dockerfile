@@ -80,6 +80,7 @@ ENV ACORE_COMPONENT=worldserver \
     AC_CLOSE_IDLE_CONNECTIONS=0
 COPY --from=build --chown=acore:acore /azerothcore/env/dist/bin/worldserver /azerothcore/env/dist/bin/worldserver
 COPY --from=build --chown=acore:acore /azerothcore/env/dist/bin/lua_scripts/ /azerothcore/env/dist/bin/lua_scripts/
+COPY --chown=acore:acore docker/lua_scripts/ /azerothcore/env/dist/bin/lua_scripts/
 # lua-battlepass targets an older Eluna-style Quest API. ALE exposes IsDaily.
 RUN sed -i 's/quest:IsDailyQuest()/quest:IsDaily()/g' \
       /azerothcore/env/dist/bin/lua_scripts/battlepass/06_BP_Events.lua

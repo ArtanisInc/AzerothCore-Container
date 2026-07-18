@@ -136,6 +136,12 @@ Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptation
 de compatibilité nécessaires sont appliquées automatiquement et de façon
 reproductible par `docker/build-source.sh` et le `Dockerfile`.
 
+## Scripts Lua inclus
+
+- [`starter_boost.lua`](https://github.com/Kyroth88/ale-scripts/blob/main/starter_boost.lua)
+  permet aux personnages de niveau 10 maximum de réclamer en jeu un équipement
+  de départ, quatre sacs et 250 pièces d'or avec la commande `.starterboost`.
+
 ### Gain Honor Guard
 
 `mod-gain-honor-guard` est activé pour le jeu solo/privé. Les gardes et les
