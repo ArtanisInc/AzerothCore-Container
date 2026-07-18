@@ -28,12 +28,6 @@ if [[ $(id -u) -eq 0 ]]; then
 fi
 cp -a --update=none "$REF_DIR/." "$CONF_DIR/"
 
-# Remove configuration files left in the persistent volume by modules that are
-# no longer part of the image.
-rm -f \
-  "$CONF_DIR/modules/fly-anywhere.conf" \
-  "$CONF_DIR/modules/fly-anywhere.conf.dist"
-
 case "${ACORE_COMPONENT:-}" in
   dbimport)    wait_for_file "$CONF_DIR/.database-preflight.ready" "SQL world-ID precheck" ;;
   authserver)  wait_for_file "$CONF_DIR/.realm-init.ready" "realm SQL initialization" ;;
