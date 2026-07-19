@@ -133,13 +133,13 @@ Les 29 modules suivants sont clonés et compilés statiquement dans
 | 19 | `mod-auto-revive` | Ressuscite automatiquement les comptes GM avant la mort, partout ou uniquement dans une zone configurée. | [azerothcore/mod-auto-revive](https://github.com/azerothcore/mod-auto-revive) |
 | 20 | `mod-duel-reset` | Réinitialise vie, ressources et cooldowns admissibles autour des duels. | [azerothcore/mod-duel-reset](https://github.com/azerothcore/mod-duel-reset) |
 | 21 | `mod-progression-system` | Charge automatiquement des scripts C++ et SQL selon les paliers de niveau activés ; les SQL appliqués ne sont pas annulés automatiquement. | [azerothcore/mod-progression-system](https://github.com/azerothcore/mod-progression-system) |
-| 22 | `NoProfessionLimit` | Autorise jusqu'aux 11 professions principales de WotLK. | [AlsoNotMehh/NoProfessionLimit](https://github.com/AlsoNotMehh/NoProfessionLimit) |
+| 22 | `NoProfessionLimit` | Autorise jusqu'aux 11 professions principales de WotLK ; la limite native du core est également fixée à 11. | [AlsoNotMehh/NoProfessionLimit](https://github.com/AlsoNotMehh/NoProfessionLimit) |
 | 23 | `mod-no-hearthstone-cooldown` | Supprime immédiatement le cooldown de la pierre de foyer. | [BytesGalore/mod-no-hearthstone-cooldown](https://github.com/BytesGalore/mod-no-hearthstone-cooldown) |
 | 24 | `mod-autofish` | Automatise la capture, le butin et la relance de la pêche. | [Flerp/mod-autofish](https://github.com/Flerp/mod-autofish) |
 | 25 | `lua-battlepass` | Ajoute un battle pass Lua, ses quêtes, récompenses et commandes. | [Shonik/lua-battlepass](https://github.com/Shonik/lua-battlepass) |
 | 26 | `mod-skip-dk-starting-area` | Permet, selon sa configuration, de passer automatiquement ou facultativement la zone de départ des chevaliers de la mort. | [d23monkey/mod-skip-dk-starting-area](https://github.com/d23monkey/mod-skip-dk-starting-area) |
 | 27 | `mod-gunship-skip` | Ajoute sur Muradin/Saurfang une option solo qui termine la Canonnière ICC, distribue son butin par courrier et téléporte après le combat. | [BlaMacfly/mod-gunship-skip](https://github.com/BlaMacfly/mod-gunship-skip) |
-| 28 | `portals-in-all-capitals` | Ajoute par SQL des portails près du maître de vol de chaque capitale, avec un script SQL inverse. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
+| 28 | `portals-in-all-capitals` | Ajoute automatiquement par SQL 24 portails près du maître de vol des capitales. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
 | 29 | `mod-gain-honor-guard` | Accorde de l'honneur pour les gardes et/ou élites non gris, hors arène et joueur vivant, avec taux, annonces et partage de groupe configurables. | [azerothcore/mod-gain-honor-guard](https://github.com/azerothcore/mod-gain-honor-guard) |
 
 Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptations

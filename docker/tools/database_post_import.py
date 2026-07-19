@@ -245,6 +245,10 @@ def main() -> int:
         MODULES_DIR / "mod-transmog/data/sql/db-world",
         ("trasm_world_NPC.sql", "transmog_npc.sql", "transmog.sql", "mod_transmog_world.sql", "world.sql"),
     )
+    capitals_portals = first_existing(
+        MODULES_DIR / "portals-in-all-capitals",
+        ("portals-in-all-capitals.up.sql",),
+    )
     battlepass = MODULES_DIR / "lua-battlepass/sql"
 
     ensure_transmog_characters_schema()
@@ -258,6 +262,12 @@ def main() -> int:
         transmog_world,
         "mod-transmog NPC",
         "SELECT COUNT(*) FROM creature_template WHERE ScriptName='npc_transmogrifier'",
+    )
+    ensure_world_data(
+        capitals_portals,
+        "portals-in-all-capitals",
+        "SELECT COUNT(*) FROM gameobject WHERE guid BETWEEN 2000000 AND 2000023",
+        minimum=24,
     )
     ensure_schema("acore_world", first_existing(battlepass, ("battlepass_world.sql",)), "lua-battlepass world")
     ensure_schema(
