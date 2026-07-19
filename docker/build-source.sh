@@ -21,6 +21,7 @@ modules=(
   "mod-learn-spells;https://github.com/azerothcore/mod-learn-spells.git"
   "mod-solo-lfg;https://github.com/azerothcore/mod-solo-lfg.git"
   "mod-challenge-modes;https://github.com/ZhengPeiRu21/mod-challenge-modes.git"
+  "mod-dungeon-master;https://github.com/InstanceForge/mod-dungeon-master.git"
   "mod-player-bot-level-brackets;https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git"
   "mod-junk-to-gold;https://github.com/kadeshar/mod-junk-to-gold.git"
   "mod-rare-drops;https://github.com/StraysFromPath/mod-rare-drops.git"
@@ -48,6 +49,20 @@ for item in "${modules[@]}"; do
   IFS=';' read -r name url <<<"$item"
   git clone --depth 1 "$url" "/azerothcore/modules/$name"
 done
+
+# The Playerbot branch uses creature.id rather than the newer id1 column used
+# by mod-dungeon-master in its SQL and runtime queries. Its default roguelike
+# buffs are documented but left commented, which makes ConfigMgr emit a
+# missing-property warning at startup.
+dungeon_master=/azerothcore/modules/mod-dungeon-master
+if [[ -d "$dungeon_master" ]]; then
+  sed -i 's/\bid1\b/id/g' \
+    "$dungeon_master/data/sql/db-world/base/dm_setup.sql" \
+    "$dungeon_master/src/DMBossSpawnQuery.h" \
+    "$dungeon_master/src/DungeonMasterMgr.cpp"
+  sed -i -E 's/^# (DungeonMaster\.Roguelike\.Buff\.[0-9]+[[:space:]]*=)/\1/' \
+    "$dungeon_master/conf/mod_dungeon_master.conf.dist"
+fi
 
 # Compatibility patches retained from the Vagrant implementation.
 challenge=/azerothcore/modules/mod-challenge-modes/src/ChallengeModes.cpp

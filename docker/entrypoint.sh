@@ -48,6 +48,19 @@ if [[ -d "$CONF_DIR/modules" ]]; then
   shopt -u nullglob
 fi
 
+# Existing config volumes may contain the commented defaults distributed by
+# older mod-dungeon-master builds. Enable them only when no roguelike buff has
+# been configured explicitly, so user-provided values remain untouched.
+dungeon_master_conf="$CONF_DIR/modules/mod_dungeon_master.conf"
+if [[ -f "$dungeon_master_conf" ]] &&
+   ! grep -qE '^[[:space:]]*DungeonMaster\.Roguelike\.Buff\.[0-9]+[[:space:]]*=' "$dungeon_master_conf"; then
+  sed -i -E 's/^# (DungeonMaster\.Roguelike\.Buff\.[0-9]+[[:space:]]*=)/\1/' "$dungeon_master_conf"
+fi
+if [[ -f "$dungeon_master_conf" ]] &&
+   ! grep -qE '^[[:space:]]*DungeonMaster\.Roguelike\.Buff\.11[[:space:]]*=' "$dungeon_master_conf"; then
+  printf '\nDungeonMaster.Roguelike.Buff.11 = ""\n' >> "$dungeon_master_conf"
+fi
+
 # Do not let AHBot claim a player character before a dedicated GUID is set.
 # admin.py removes this one-time safety by writing a validated GUID and enabling
 # the seller directly in the persistent module configuration.
