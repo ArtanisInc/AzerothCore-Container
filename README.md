@@ -1,7 +1,7 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot, 29 modules additionnels et trois
+AzerothCore WoW 3.3.5a, la branche Playerbot, 28 modules additionnels et trois
 scripts Lua personnalisés.
 
 ## Prérequis
@@ -43,7 +43,7 @@ Podman, ils fonctionnent directement si le paquet de compatibilité
 `podman-docker` est installé. Sans ce paquet, utilisez les commandes
 `podman compose` indiquées dans ce document.
 
-Le premier lancement est long : Docker clone 29 modules, compile le core,
+Le premier lancement est long : Docker clone 28 modules, compile le core,
 importe les bases et télécharge les données client.
 
 ```bash
@@ -107,7 +107,7 @@ dans `.env.example`. Les variables les plus importantes sont :
 
 ## Modules inclus
 
-Les 29 modules suivants sont clonés et compilés statiquement dans
+Les 28 modules suivants sont clonés et compilés statiquement dans
 `worldserver` :
 
 | # | Module | Fonction | Dépôt |
@@ -132,15 +132,14 @@ Les 29 modules suivants sont clonés et compilés statiquement dans
 | 18 | `mod-boss-announcer` | Annonce les victoires sur les boss ; les annonces de wipe sont désactivées dans le profil fourni. | [azerothcore/mod-boss-announcer](https://github.com/azerothcore/mod-boss-announcer) |
 | 19 | `mod-auto-revive` | Ressuscite automatiquement les comptes GM avant la mort, partout ou uniquement dans une zone configurée. | [azerothcore/mod-auto-revive](https://github.com/azerothcore/mod-auto-revive) |
 | 20 | `mod-duel-reset` | Réinitialise vie, ressources et cooldowns admissibles autour des duels. | [azerothcore/mod-duel-reset](https://github.com/azerothcore/mod-duel-reset) |
-| 21 | `mod-progression-system` | Charge des scripts C++ et SQL selon les paliers activés. Tous les paliers sont désactivés par défaut afin d'éviter toute modification irréversible de la base. | [azerothcore/mod-progression-system](https://github.com/azerothcore/mod-progression-system) |
-| 22 | `NoProfessionLimit` | Autorise jusqu'aux 11 professions principales de WotLK ; la limite native du core est également fixée à 11. | [AlsoNotMehh/NoProfessionLimit](https://github.com/AlsoNotMehh/NoProfessionLimit) |
-| 23 | `mod-no-hearthstone-cooldown` | Supprime immédiatement le cooldown de la pierre de foyer. | [BytesGalore/mod-no-hearthstone-cooldown](https://github.com/BytesGalore/mod-no-hearthstone-cooldown) |
-| 24 | `mod-autofish` | Automatise la capture, le butin et la relance de la pêche. | [Flerp/mod-autofish](https://github.com/Flerp/mod-autofish) |
-| 25 | `lua-battlepass` | Ajoute un battle pass Lua, ses quêtes, récompenses et commandes. | [Shonik/lua-battlepass](https://github.com/Shonik/lua-battlepass) |
-| 26 | `mod-skip-dk-starting-area` | Permet, selon sa configuration, de passer automatiquement ou facultativement la zone de départ des chevaliers de la mort. | [d23monkey/mod-skip-dk-starting-area](https://github.com/d23monkey/mod-skip-dk-starting-area) |
-| 27 | `mod-gunship-skip` | Ajoute sur Muradin/Saurfang une option solo qui termine la Canonnière ICC, distribue son butin par courrier et téléporte après le combat. | [BlaMacfly/mod-gunship-skip](https://github.com/BlaMacfly/mod-gunship-skip) |
-| 28 | `portals-in-all-capitals` | Ajoute automatiquement par SQL 24 portails près du maître de vol des capitales. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
-| 29 | `mod-gain-honor-guard` | Accorde de l'honneur pour les gardes et/ou élites non gris, hors arène et joueur vivant, avec taux, annonces et partage de groupe configurables. | [azerothcore/mod-gain-honor-guard](https://github.com/azerothcore/mod-gain-honor-guard) |
+| 21 | `NoProfessionLimit` | Autorise jusqu'aux 11 professions principales de WotLK ; la limite native du core est également fixée à 11. | [AlsoNotMehh/NoProfessionLimit](https://github.com/AlsoNotMehh/NoProfessionLimit) |
+| 22 | `mod-no-hearthstone-cooldown` | Supprime immédiatement le cooldown de la pierre de foyer. | [BytesGalore/mod-no-hearthstone-cooldown](https://github.com/BytesGalore/mod-no-hearthstone-cooldown) |
+| 23 | `mod-autofish` | Automatise la capture, le butin et la relance de la pêche. | [Flerp/mod-autofish](https://github.com/Flerp/mod-autofish) |
+| 24 | `lua-battlepass` | Ajoute un battle pass Lua, ses quêtes, récompenses et commandes. | [Shonik/lua-battlepass](https://github.com/Shonik/lua-battlepass) |
+| 25 | `mod-skip-dk-starting-area` | Permet, selon sa configuration, de passer automatiquement ou facultativement la zone de départ des chevaliers de la mort. | [d23monkey/mod-skip-dk-starting-area](https://github.com/d23monkey/mod-skip-dk-starting-area) |
+| 26 | `mod-gunship-skip` | Ajoute sur Muradin/Saurfang une option solo qui termine la Canonnière ICC, distribue son butin par courrier et téléporte après le combat. | [BlaMacfly/mod-gunship-skip](https://github.com/BlaMacfly/mod-gunship-skip) |
+| 27 | `portals-in-all-capitals` | Ajoute automatiquement par SQL 24 portails près du maître de vol des capitales. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
+| 28 | `mod-gain-honor-guard` | Accorde de l'honneur pour les gardes et/ou élites non gris, hors arène et joueur vivant, avec taux, annonces et partage de groupe configurables. | [azerothcore/mod-gain-honor-guard](https://github.com/azerothcore/mod-gain-honor-guard) |
 
 Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptations
 de compatibilité nécessaires sont appliquées automatiquement et de façon
@@ -311,7 +310,7 @@ podman compose exec database mysql -uroot -p
 
 Les réglages versionnés se trouvent dans `docker/acore.env`. Ce profil contient
 maintenant l'intégralité des réglages statiques de l'ancienne installation
-Vagrant (269 variables Compose, plus les secrets injectés par Compose). Le point devient
+Vagrant (249 variables Compose, plus les secrets injectés par Compose). Le point devient
 un underscore, les transitions minuscule/majuscule reçoivent un underscore et
 la clé est préfixée par `AC_` :
 
@@ -327,10 +326,7 @@ Après une modification :
 docker compose up -d --force-recreate authserver worldserver
 ```
 
-Les configurations générées sont conservées dans le volume `config`. Les 38
-brackets du module Progression System sont forcés à `0` **une seule fois**, lors
-de la première initialisation. Le marqueur persistant permet ensuite de modifier
-les brackets sans que Docker les réinitialise au redémarrage.
+Les configurations générées sont conservées dans le volume `config`.
 
 ## AHBot
 

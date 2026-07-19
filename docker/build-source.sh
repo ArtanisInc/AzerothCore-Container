@@ -34,7 +34,6 @@ modules=(
   "mod-boss-announcer;https://github.com/azerothcore/mod-boss-announcer.git"
   "mod-auto-revive;https://github.com/azerothcore/mod-auto-revive.git"
   "mod-duel-reset;https://github.com/azerothcore/mod-duel-reset.git"
-  "mod-progression-system;https://github.com/azerothcore/mod-progression-system.git"
   "NoProfessionLimit;https://github.com/AlsoNotMehh/NoProfessionLimit.git"
   "mod-no-hearthstone-cooldown;https://github.com/BytesGalore/mod-no-hearthstone-cooldown.git"
   "mod-autofish;https://github.com/Flerp/mod-autofish.git"
