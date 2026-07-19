@@ -66,20 +66,10 @@ if [[ -f "$profession" ]]; then
   sed -i 's/PLAYERHOOK_ON_SET_SKILL/PLAYERHOOK_ON_UPDATE_SKILL/g; s/void OnPlayerSetSkill/void OnPlayerUpdateSkill/g' "$profession"
 fi
 
-# mod-rare-drops still uses the former PlayerScript login hook name. Current
-# AzerothCore exposes OnPlayerLogin(Player*), so OnLogin can no longer override
-# a virtual member and makes the complete module build fail.
-rare_drops=/azerothcore/modules/mod-rare-drops/src/MyPlayer.cpp
-if [[ -f "$rare_drops" ]]; then
-  sed -i 's/void OnLogin(Player\* player)/void OnPlayerLogin(Player* player)/g' "$rare_drops"
-fi
-
-# Its loader still carries the skeleton template symbol, while the module
-# generator expects a function derived from the directory name.
-rare_drops_loader=/azerothcore/modules/mod-rare-drops/src/MP_loader.cpp
-if [[ -f "$rare_drops_loader" ]]; then
-  sed -i 's/void Addskeleton_moduleScripts()/void Addmod_rare_dropsScripts()/g' "$rare_drops_loader"
-fi
+# mod-rare-drops is documented upstream as SQL-only. Its repository still
+# contains the AzerothCore skeleton C++ and configuration, which merely display
+# a "Hello World" login message and are unrelated to rare loot.
+rm -rf /azerothcore/modules/mod-rare-drops/src /azerothcore/modules/mod-rare-drops/conf
 
 while IFS= read -r -d '' reagent_sql; do
   sed -i 's/mechanic_immune_mask/CreatureImmunitiesId/g' "$reagent_sql"

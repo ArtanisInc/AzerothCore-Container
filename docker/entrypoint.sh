@@ -28,6 +28,10 @@ if [[ $(id -u) -eq 0 ]]; then
 fi
 cp -a --update=none "$REF_DIR/." "$CONF_DIR/"
 
+# Remove the obsolete sample configuration previously shipped by the
+# SQL-only mod-rare-drops skeleton.
+rm -f "$CONF_DIR/modules/my_custom.conf" "$CONF_DIR/modules/my_custom.conf.dist"
+
 case "${ACORE_COMPONENT:-}" in
   dbimport)    wait_for_file "$CONF_DIR/.database-preflight.ready" "SQL world-ID precheck" ;;
   authserver)  wait_for_file "$CONF_DIR/.realm-init.ready" "realm SQL initialization" ;;

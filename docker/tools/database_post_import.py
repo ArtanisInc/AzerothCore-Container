@@ -136,6 +136,27 @@ def ensure_battlepass_npc() -> None:
     print(f"[OK] lua-battlepass NPC template created from safe gossip template {source}")
 
 
+def ensure_mount_scaling_data() -> None:
+    """Apply the module's SQL against the current AzerothCore schema.
+
+    Upstream still references the retired trainer_spell table, while the
+    Playerbot branch stores trainer requirements in npc_trainer.
+    """
+    mysql(
+        "UPDATE npc_trainer SET ReqLevel=1 WHERE SpellID=33388; "
+        "UPDATE item_template SET RequiredLevel=1 "
+        "WHERE RequiredSkill=762 AND RequiredSkillRank=75 AND RequiredLevel<=20",
+        "acore_world",
+    )
+    trainer_level = scalar(
+        "SELECT ReqLevel FROM npc_trainer WHERE SpellID=33388 LIMIT 1",
+        "acore_world",
+    )
+    if trainer_level != "1":
+        raise ToolError(f"mod-mount-scaling: Apprentice Riding ReqLevel is {trainer_level or 'missing'}")
+    print("[OK] mod-mount-scaling: Apprentice Riding available from level 1")
+
+
 def density_multiplier(name: str) -> int:
     raw = os.getenv(name, "3").strip()
     try:
@@ -276,6 +297,7 @@ def main() -> int:
         "lua-battlepass characters",
     )
     ensure_battlepass_npc()
+    ensure_mount_scaling_data()
     ensure_better_professions_density()
     ensure_soap_account()
 
