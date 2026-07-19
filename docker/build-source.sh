@@ -22,6 +22,8 @@ modules=(
   "mod-solo-lfg;https://github.com/azerothcore/mod-solo-lfg.git"
   "mod-challenge-modes;https://github.com/ZhengPeiRu21/mod-challenge-modes.git"
   "mod-dungeon-master;https://github.com/InstanceForge/mod-dungeon-master.git"
+  "mod-no-item-binding;https://github.com/Nevaden/mod-no-item-binding.git"
+  "mod-auto-gather;https://github.com/thanhtong89/mod-auto-gather.git"
   "mod-player-bot-level-brackets;https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git"
   "mod-junk-to-gold;https://github.com/kadeshar/mod-junk-to-gold.git"
   "mod-rare-drops;https://github.com/StraysFromPath/mod-rare-drops.git"
@@ -62,6 +64,27 @@ if [[ -d "$dungeon_master" ]]; then
     "$dungeon_master/src/DungeonMasterMgr.cpp"
   sed -i -E 's/^# (DungeonMaster\.Roguelike\.Buff\.[0-9]+[[:space:]]*=)/\1/' \
     "$dungeon_master/conf/mod_dungeon_master.conf.dist"
+fi
+
+# Auto Gather is intended for connected players. Scanning every nearby object
+# once per second for every random Playerbot is both unnecessary and unstable
+# while the bot population is being loaded.
+auto_gather=/azerothcore/modules/mod-auto-gather/src/AutoGather.cpp
+if [[ -f "$auto_gather" ]]; then
+  sed -i 's/if (!cfgEnable)/if (!cfgEnable || !player->GetSession() || player->GetSession()->IsBot())/g' "$auto_gather"
+fi
+
+# The item templates are already unbound globally by the module SQL. Keep its
+# runtime safety hooks for real players, but do not mutate items while the
+# Playerbot subsystem is loading and equipping its large random-bot pool.
+no_item_binding=/azerothcore/modules/mod-no-item-binding/src/mod_no_item_binding.cpp
+if [[ -f "$no_item_binding" ]]; then
+  sed -i \
+    -e 's/Player\* \/\*player\*\//Player* player/g' \
+    -e 's/Unbind(item);/Unbind(player, item);/g' \
+    -e 's/static void Unbind(Item\* item)/static void Unbind(Player* player, Item* item)/' \
+    -e 's/if (!sConfigMgr->GetOption<bool>("NoItemBinding.Enable", true))/if (!sConfigMgr->GetOption<bool>("NoItemBinding.Enable", true) || !player || !player->GetSession() || player->GetSession()->IsBot())/' \
+    "$no_item_binding"
 fi
 
 # Compatibility patches retained from the Vagrant implementation.
