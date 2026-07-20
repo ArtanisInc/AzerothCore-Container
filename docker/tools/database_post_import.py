@@ -55,6 +55,18 @@ BETTER_PROFESSIONS_RESOURCES = {
     ),
 }
 
+TRANSMOG_CAPITAL_SPAWNS = (
+    # guid, map, x, y, z, orientation, capital
+    (8000100, 0, -8991.36, 847.38, 29.621, 4.8936, "Stormwind"),
+    (8000101, 0, -4608.54, -915.10, 501.146, 6.2483, "Ironforge"),
+    (8000102, 1, 9657.43, 2510.25, 1331.700, 5.3931, "Darnassus"),
+    (8000103, 530, -4041.89, -11557.93, -138.307, 2.2689, "Exodar"),
+    (8000104, 1, 1473.00, -4222.79, 59.321, 6.1087, "Orgrimmar"),
+    (8000105, 1, -967.22, 283.79, 110.805, 4.5030, "Thunder Bluff"),
+    (8000106, 0, 1776.31, 66.17, -46.237, 5.9341, "Undercity"),
+    (8000107, 530, 9987.42, -7104.59, 47.788, 2.9671, "Silvermoon"),
+)
+
 
 def import_sql(database: str, path: Path, label: str) -> None:
     print(f"[INFO] {label}: importing {path.name}")
@@ -103,6 +115,71 @@ def ensure_transmog_characters_schema() -> None:
     missing = [table for table in required if not table_exists("acore_characters", table)]
     if missing:
         raise ToolError(f"mod-transmog characters tables missing: {', '.join(missing)}")
+
+
+def ensure_transmog_capital_npcs() -> None:
+    """Spawn one upstream Warpweaver near the portal trainer in each capital."""
+    template = scalar(
+        "SELECT COUNT(*) FROM creature_template "
+        "WHERE entry=190010 AND ScriptName='npc_transmogrifier'",
+        "acore_world",
+        "0",
+    )
+    if template != "1":
+        raise ToolError("mod-transmog capital NPCs: creature template 190010 is unavailable")
+
+    guid_list = ",".join(str(spawn[0]) for spawn in TRANSMOG_CAPITAL_SPAWNS)
+    conflicts = mysql(
+        "SELECT CONCAT(guid, ':', id) FROM creature "
+        f"WHERE guid IN ({guid_list}) "
+        "AND (id<>190010 OR Comment NOT LIKE 'AzerothCore-Container transmog:%')",
+        "acore_world",
+    )
+    if conflicts:
+        raise ToolError(f"mod-transmog capital NPC GUID conflict(s): {conflicts.replace(chr(10), ', ')}")
+
+    current = int(
+        scalar(
+            "SELECT COUNT(*) FROM creature "
+            f"WHERE guid IN ({guid_list}) AND id=190010 "
+            "AND Comment LIKE 'AzerothCore-Container transmog:%'",
+            "acore_world",
+            "0",
+        )
+    )
+    if current == len(TRANSMOG_CAPITAL_SPAWNS):
+        print(f"[OK] mod-transmog: {current} capital NPCs already present")
+        return
+
+    rows = ",".join(
+        "("
+        f"{guid},190010,{map_id},0,0,1,1,0,{x},{y},{z},{orientation},"
+        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container transmog: {capital}'"
+        ")"
+        for guid, map_id, x, y, z, orientation, capital in TRANSMOG_CAPITAL_SPAWNS
+    )
+    mysql(
+        f"DELETE FROM creature WHERE guid IN ({guid_list}); "
+        "INSERT INTO creature "
+        "(guid,id,map,zoneId,areaId,spawnMask,phaseMask,equipment_id,"
+        "position_x,position_y,position_z,orientation,spawntimesecs,wander_distance,"
+        "currentwaypoint,curhealth,curmana,MovementType,npcflag,unit_flags,dynamicflags,"
+        "ScriptName,VerifiedBuild,CreateObject,Comment) VALUES "
+        f"{rows}",
+        "acore_world",
+    )
+    imported = int(
+        scalar(
+            "SELECT COUNT(*) FROM creature "
+            f"WHERE guid IN ({guid_list}) AND id=190010 "
+            "AND Comment LIKE 'AzerothCore-Container transmog:%'",
+            "acore_world",
+            "0",
+        )
+    )
+    if imported != len(TRANSMOG_CAPITAL_SPAWNS):
+        raise ToolError(f"mod-transmog capital NPC import returned {imported}")
+    print(f"[OK] mod-transmog: {imported} capital NPCs installed")
 
 
 def ensure_battlepass_npc() -> None:
@@ -284,6 +361,7 @@ def main() -> int:
         "mod-transmog NPC",
         "SELECT COUNT(*) FROM creature_template WHERE ScriptName='npc_transmogrifier'",
     )
+    ensure_transmog_capital_npcs()
     ensure_world_data(
         capitals_portals,
         "portals-in-all-capitals",
