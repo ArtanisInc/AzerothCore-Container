@@ -57,30 +57,30 @@ BETTER_PROFESSIONS_RESOURCES = {
 
 TRANSMOG_CAPITAL_SPAWNS = (
     # guid, map, x, y, z, orientation, capital
-    (8000100, 0, -8991.36, 847.38, 29.621, 4.8936, "Stormwind"),
-    (8000101, 0, -4608.54, -915.10, 501.146, 6.2483, "Ironforge"),
-    (8000102, 1, 9657.43, 2510.25, 1331.700, 5.3931, "Darnassus"),
-    (8000103, 530, -4041.89, -11557.93, -138.307, 2.2689, "Exodar"),
-    (8000104, 1, 1473.00, -4222.79, 59.321, 6.1087, "Orgrimmar"),
-    (8000105, 1, -967.22, 283.79, 110.805, 4.5030, "Thunder Bluff"),
-    (8000106, 0, 1776.31, 66.17, -46.237, 5.9341, "Undercity"),
-    (8000107, 530, 9987.42, -7104.59, 47.788, 2.9671, "Silvermoon"),
+    (8000100, 0, -8991.90, 850.33, 29.621, 4.8936, "Stormwind"),
+    (8000101, 0, -4611.54, -915.00, 501.146, 6.2483, "Ironforge"),
+    (8000102, 1, 9655.54, 2512.58, 1331.700, 5.3931, "Darnassus"),
+    (8000103, 530, -4039.96, -11560.23, -138.307, 2.2689, "Exodar"),
+    (8000104, 1, 1470.05, -4222.27, 59.321, 6.1087, "Orgrimmar"),
+    (8000105, 1, -966.59, 286.72, 110.805, 4.5030, "Thunder Bluff"),
+    (8000106, 0, 1773.49, 67.20, -46.237, 5.9341, "Undercity"),
+    (8000107, 530, 9990.38, -7105.12, 47.788, 2.9671, "Silvermoon"),
 )
 
 REAGENT_BANK_CITY_SPAWNS = (
     # guid, map, x, y, z, orientation, location
-    (8000110, 0, -8929.47, 606.74, 99.610, 3.6306, "Stormwind"),
-    (8000111, 0, -4887.78, -996.01, 504.020, 5.3756, "Ironforge"),
-    (8000112, 1, 9941.28, 2517.39, 1317.660, 1.1864, "Darnassus"),
-    (8000113, 530, -3919.20, -11546.68, -150.040, 1.4464, "Exodar"),
-    (8000114, 1, 1625.41, -4376.65, 12.060, 0.2964, "Orgrimmar"),
-    (8000115, 1, -1257.94, 21.54, 128.270, 4.8696, "Thunder Bluff"),
-    (8000116, 0, 1589.50, 240.54, -52.060, 6.1786, "Undercity"),
-    (8000117, 530, 9525.23, -7219.82, 16.210, 4.7126, "Silvermoon"),
-    (8000118, 530, -2002.51, 5351.07, -9.270, 0.3844, "Shattrath Scryers"),
-    (8000119, 530, -1727.38, 5507.05, -9.720, 3.4206, "Shattrath Aldor"),
-    (8000120, 571, 5625.80, 694.55, 652.680, 2.7924, "Dalaran Horde"),
-    (8000121, 571, 5982.70, 607.79, 651.260, 5.9346, "Dalaran Alliance"),
+    (8000110, 0, -8926.82, 608.15, 99.610, 3.6306, "Stormwind"),
+    (8000111, 0, -4889.63, -993.65, 504.020, 5.3756, "Ironforge"),
+    (8000112, 1, 9940.15, 2514.61, 1317.660, 1.1864, "Darnassus"),
+    (8000113, 530, -3919.57, -11549.66, -150.040, 1.4464, "Exodar"),
+    (8000114, 1, 1622.54, -4377.53, 12.060, 0.2964, "Orgrimmar"),
+    (8000115, 1, -1258.41, 24.50, 128.270, 4.8696, "Thunder Bluff"),
+    (8000116, 0, 1586.52, 240.85, -52.060, 6.1786, "Undercity"),
+    (8000117, 530, 9525.23, -7216.82, 16.210, 4.7126, "Silvermoon"),
+    (8000118, 530, -2005.29, 5349.94, -9.270, 0.3844, "Shattrath Scryers"),
+    (8000119, 530, -1724.49, 5507.88, -9.720, 3.4206, "Shattrath Aldor"),
+    (8000120, 571, 5628.62, 693.52, 652.680, 2.7924, "Dalaran Horde"),
+    (8000121, 571, 5979.88, 608.82, 651.260, 5.9346, "Dalaran Alliance"),
 )
 
 
@@ -158,7 +158,7 @@ def ensure_transmog_capital_npcs() -> None:
         scalar(
             "SELECT COUNT(*) FROM creature "
             f"WHERE guid IN ({guid_list}) AND id=190010 "
-            "AND Comment LIKE 'AzerothCore-Container transmog:%'",
+            "AND Comment LIKE 'AzerothCore-Container transmog: v2:%'",
             "acore_world",
             "0",
         )
@@ -170,7 +170,7 @@ def ensure_transmog_capital_npcs() -> None:
     rows = ",".join(
         "("
         f"{guid},190010,{map_id},0,0,1,1,0,{x},{y},{z},{orientation},"
-        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container transmog: {capital}'"
+        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container transmog: v2: {capital}'"
         ")"
         for guid, map_id, x, y, z, orientation, capital in TRANSMOG_CAPITAL_SPAWNS
     )
@@ -188,7 +188,7 @@ def ensure_transmog_capital_npcs() -> None:
         scalar(
             "SELECT COUNT(*) FROM creature "
             f"WHERE guid IN ({guid_list}) AND id=190010 "
-            "AND Comment LIKE 'AzerothCore-Container transmog:%'",
+            "AND Comment LIKE 'AzerothCore-Container transmog: v2:%'",
             "acore_world",
             "0",
         )
@@ -213,7 +213,7 @@ def ensure_reagent_bank_city_npcs() -> None:
     conflicts = mysql(
         "SELECT CONCAT(guid, ':', id) FROM creature "
         f"WHERE guid IN ({guid_list}) "
-        "AND (id<>290011 OR Comment NOT LIKE 'AzerothCore-Container reagent bank:%')",
+        "AND (id<>290011 OR Comment NOT LIKE 'AzerothCore-Container reagent bank%')",
         "acore_world",
     )
     if conflicts:
@@ -225,7 +225,7 @@ def ensure_reagent_bank_city_npcs() -> None:
         scalar(
             "SELECT COUNT(*) FROM creature "
             f"WHERE guid IN ({guid_list}) AND id=290011 "
-            "AND Comment LIKE 'AzerothCore-Container reagent bank:%'",
+            "AND Comment LIKE 'AzerothCore-Container reagent bank v2:%'",
             "acore_world",
             "0",
         )
@@ -237,7 +237,7 @@ def ensure_reagent_bank_city_npcs() -> None:
     rows = ",".join(
         "("
         f"{guid},290011,{map_id},0,0,1,1,0,{x},{y},{z},{orientation},"
-        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container reagent bank: {location}'"
+        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container reagent bank v2: {location}'"
         ")"
         for guid, map_id, x, y, z, orientation, location in REAGENT_BANK_CITY_SPAWNS
     )
@@ -255,7 +255,7 @@ def ensure_reagent_bank_city_npcs() -> None:
         scalar(
             "SELECT COUNT(*) FROM creature "
             f"WHERE guid IN ({guid_list}) AND id=290011 "
-            "AND Comment LIKE 'AzerothCore-Container reagent bank:%'",
+            "AND Comment LIKE 'AzerothCore-Container reagent bank v2:%'",
             "acore_world",
             "0",
         )
