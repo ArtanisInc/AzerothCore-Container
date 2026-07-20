@@ -120,8 +120,9 @@ cd /azerothcore/build
 cmake .. \
   -DCMAKE_INSTALL_PREFIX=/azerothcore/env/dist \
   -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-  -DCMAKE_C_COMPILER=clang \
-  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_C_COMPILER=clang-20 \
+  -DCMAKE_CXX_COMPILER=clang++-20 \
+  -DCMAKE_CXX_FLAGS=--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/15 \
   -DCMAKE_C_COMPILER_LAUNCHER=ccache \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   -DBoost_USE_STATIC_LIBS=ON \

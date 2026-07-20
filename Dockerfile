@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-ARG UBUNTU_VERSION=24.04
+ARG UBUNTU_VERSION=26.04
 
 FROM docker.io/library/ubuntu:${UBUNTU_VERSION} AS source
 
@@ -20,8 +20,8 @@ ARG BUILD_TYPE=Release
 ARG BUILD_JOBS=4
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      build-essential ccache clang cmake git make python3 \
-      default-libmysqlclient-dev libboost-all-dev libbz2-dev liblzma-dev \
+      build-essential ccache clang-20 cmake git make python3 \
+      default-libmysqlclient-dev libboost-all-dev libbz2-dev libicu-dev liblzma-dev \
       libncurses-dev libreadline-dev libssl-dev zlib1g-dev ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -46,7 +46,7 @@ ENV TZ=Etc/UTC \
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       bash ca-certificates curl default-mysql-client gettext-base gosu python3 \
-      libicu74 libmysqlclient21 libncurses6 libreadline8 tini \
+      libicu78 libmysqlclient24 libncurses6 libreadline8t64 tini \
     && rm -rf /var/lib/apt/lists/* \
     && if getent passwd ubuntu >/dev/null; then userdel -r ubuntu; fi \
     && groupadd --gid "$GROUP_ID" acore \

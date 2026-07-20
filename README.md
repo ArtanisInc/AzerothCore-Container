@@ -4,6 +4,10 @@ Environnement Compose validé avec Docker et Podman pour compiler et exécuter
 AzerothCore WoW 3.3.5a, la branche Playerbot, 31 modules additionnels et trois
 scripts Lua personnalisés.
 
+Les images de compilation et d'exécution reposent sur Ubuntu 26.04. Le core
+est compilé avec Clang 20, conformément à la plateforme CI prise en charge par
+AzerothCore.
+
 ## Prérequis
 
 - Docker Engine avec Docker Compose v2 (`docker compose`), **ou**
