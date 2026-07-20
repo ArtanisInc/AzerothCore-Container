@@ -67,6 +67,22 @@ TRANSMOG_CAPITAL_SPAWNS = (
     (8000107, 530, 9987.42, -7104.59, 47.788, 2.9671, "Silvermoon"),
 )
 
+REAGENT_BANK_CITY_SPAWNS = (
+    # guid, map, x, y, z, orientation, location
+    (8000110, 0, -8929.47, 606.74, 99.610, 3.6306, "Stormwind"),
+    (8000111, 0, -4887.78, -996.01, 504.020, 5.3756, "Ironforge"),
+    (8000112, 1, 9941.28, 2517.39, 1317.660, 1.1864, "Darnassus"),
+    (8000113, 530, -3919.20, -11546.68, -150.040, 1.4464, "Exodar"),
+    (8000114, 1, 1625.41, -4376.65, 12.060, 0.2964, "Orgrimmar"),
+    (8000115, 1, -1257.94, 21.54, 128.270, 4.8696, "Thunder Bluff"),
+    (8000116, 0, 1589.50, 240.54, -52.060, 6.1786, "Undercity"),
+    (8000117, 530, 9525.23, -7219.82, 16.210, 4.7126, "Silvermoon"),
+    (8000118, 530, -2002.51, 5351.07, -9.270, 0.3844, "Shattrath Scryers"),
+    (8000119, 530, -1727.38, 5507.05, -9.720, 3.4206, "Shattrath Aldor"),
+    (8000120, 571, 5625.80, 694.55, 652.680, 2.7924, "Dalaran Horde"),
+    (8000121, 571, 5982.70, 607.79, 651.260, 5.9346, "Dalaran Alliance"),
+)
+
 
 def import_sql(database: str, path: Path, label: str) -> None:
     print(f"[INFO] {label}: importing {path.name}")
@@ -180,6 +196,73 @@ def ensure_transmog_capital_npcs() -> None:
     if imported != len(TRANSMOG_CAPITAL_SPAWNS):
         raise ToolError(f"mod-transmog capital NPC import returned {imported}")
     print(f"[OK] mod-transmog: {imported} capital NPCs installed")
+
+
+def ensure_reagent_bank_city_npcs() -> None:
+    """Spawn the upstream reagent banker beside major-city banks."""
+    template = scalar(
+        "SELECT COUNT(*) FROM creature_template "
+        "WHERE entry=290011 AND ScriptName='npc_reagent_banker'",
+        "acore_world",
+        "0",
+    )
+    if template != "1":
+        raise ToolError("mod-reagent-bank-account city NPCs: creature template 290011 is unavailable")
+
+    guid_list = ",".join(str(spawn[0]) for spawn in REAGENT_BANK_CITY_SPAWNS)
+    conflicts = mysql(
+        "SELECT CONCAT(guid, ':', id) FROM creature "
+        f"WHERE guid IN ({guid_list}) "
+        "AND (id<>290011 OR Comment NOT LIKE 'AzerothCore-Container reagent bank:%')",
+        "acore_world",
+    )
+    if conflicts:
+        raise ToolError(
+            f"mod-reagent-bank-account city NPC GUID conflict(s): {conflicts.replace(chr(10), ', ')}"
+        )
+
+    current = int(
+        scalar(
+            "SELECT COUNT(*) FROM creature "
+            f"WHERE guid IN ({guid_list}) AND id=290011 "
+            "AND Comment LIKE 'AzerothCore-Container reagent bank:%'",
+            "acore_world",
+            "0",
+        )
+    )
+    if current == len(REAGENT_BANK_CITY_SPAWNS):
+        print(f"[OK] mod-reagent-bank-account: {current} city NPCs already present")
+        return
+
+    rows = ",".join(
+        "("
+        f"{guid},290011,{map_id},0,0,1,1,0,{x},{y},{z},{orientation},"
+        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container reagent bank: {location}'"
+        ")"
+        for guid, map_id, x, y, z, orientation, location in REAGENT_BANK_CITY_SPAWNS
+    )
+    mysql(
+        f"DELETE FROM creature WHERE guid IN ({guid_list}); "
+        "INSERT INTO creature "
+        "(guid,id,map,zoneId,areaId,spawnMask,phaseMask,equipment_id,"
+        "position_x,position_y,position_z,orientation,spawntimesecs,wander_distance,"
+        "currentwaypoint,curhealth,curmana,MovementType,npcflag,unit_flags,dynamicflags,"
+        "ScriptName,VerifiedBuild,CreateObject,Comment) VALUES "
+        f"{rows}",
+        "acore_world",
+    )
+    imported = int(
+        scalar(
+            "SELECT COUNT(*) FROM creature "
+            f"WHERE guid IN ({guid_list}) AND id=290011 "
+            "AND Comment LIKE 'AzerothCore-Container reagent bank:%'",
+            "acore_world",
+            "0",
+        )
+    )
+    if imported != len(REAGENT_BANK_CITY_SPAWNS):
+        raise ToolError(f"mod-reagent-bank-account city NPC import returned {imported}")
+    print(f"[OK] mod-reagent-bank-account: {imported} city NPCs installed")
 
 
 def ensure_battlepass_npc() -> None:
@@ -356,6 +439,7 @@ def main() -> int:
         "mod-reagent-bank-account world",
         "SELECT COUNT(*) FROM creature_template WHERE ScriptName LIKE '%reagent%' OR name LIKE '%Reagent%'",
     )
+    ensure_reagent_bank_city_npcs()
     ensure_world_data(
         transmog_world,
         "mod-transmog NPC",
