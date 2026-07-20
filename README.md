@@ -1,7 +1,7 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot, 31 modules additionnels et trois
+AzerothCore WoW 3.3.5a, la branche Playerbot, 32 modules additionnels et trois
 scripts Lua personnalisés.
 
 ## Prérequis
@@ -43,7 +43,7 @@ Podman, ils fonctionnent directement si le paquet de compatibilité
 `podman-docker` est installé. Sans ce paquet, utilisez les commandes
 `podman compose` indiquées dans ce document.
 
-Le premier lancement est long : Docker clone 31 modules, compile le core,
+Le premier lancement est long : Docker clone 32 modules, compile le core,
 importe les bases et télécharge les données client.
 
 ```bash
@@ -107,7 +107,7 @@ dans `.env.example`. Les variables les plus importantes sont :
 
 ## Modules inclus
 
-Les 31 modules suivants sont clonés et compilés statiquement dans
+Les 32 modules suivants sont clonés et compilés statiquement dans
 `worldserver` :
 
 | # | Module | Fonction | Dépôt |
@@ -143,6 +143,7 @@ Les 31 modules suivants sont clonés et compilés statiquement dans
 | 29 | `mod-dungeon-master` | Ajoute des donjons procéduraux jouables seul ou en groupe, avec difficulté, thèmes, mise à l'échelle, récompenses et mode roguelike à affixes. | [InstanceForge/mod-dungeon-master](https://github.com/InstanceForge/mod-dungeon-master) |
 | 30 | `mod-no-item-binding` | Supprime la liaison quand ramassé et quand équipé afin de permettre l'échange des équipements ; les objets liés à l'utilisation et les objets de quête restent inchangés. | [Nevaden/mod-no-item-binding](https://github.com/Nevaden/mod-no-item-binding) |
 | 31 | `mod-auto-gather` | Récolte automatiquement à proximité les plantes, minerais et créatures dépeçables admissibles, tout en conservant les prérequis et gains de compétence. | [thanhtong89/mod-auto-gather](https://github.com/thanhtong89/mod-auto-gather) |
+| 32 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
 
 Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptations
 de compatibilité nécessaires sont appliquées automatiquement et de façon

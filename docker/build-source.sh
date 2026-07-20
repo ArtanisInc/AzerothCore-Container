@@ -24,6 +24,7 @@ modules=(
   "mod-dungeon-master;https://github.com/InstanceForge/mod-dungeon-master.git"
   "mod-no-item-binding;https://github.com/Nevaden/mod-no-item-binding.git"
   "mod-auto-gather;https://github.com/thanhtong89/mod-auto-gather.git"
+  "DungeonRespawn;https://github.com/riksbyville/DungeonRespawn.git"
   "mod-player-bot-level-brackets;https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git"
   "mod-junk-to-gold;https://github.com/kadeshar/mod-junk-to-gold.git"
   "mod-rare-drops;https://github.com/StraysFromPath/mod-rare-drops.git"
@@ -85,6 +86,19 @@ if [[ -f "$no_item_binding" ]]; then
     -e 's/static void Unbind(Item\* item)/static void Unbind(Player* player, Item* item)/' \
     -e 's/if (!sConfigMgr->GetOption<bool>("NoItemBinding.Enable", true))/if (!sConfigMgr->GetOption<bool>("NoItemBinding.Enable", true) || !player || !player->GetSession() || player->GetSession()->IsBot())/' \
     "$no_item_binding"
+fi
+
+# Dungeon Respawn is a player-facing feature; random Playerbots must not fill
+# its persistent character-state table. Also stop iterating after erasing the
+# logout marker, as the upstream iterator is invalid after erase().
+dungeon_respawn=/azerothcore/modules/DungeonRespawn
+if [[ -d "$dungeon_respawn" ]]; then
+  sed -i 's/DungeonRespawn.Enable = 0/DungeonRespawn.Enable = 1/' \
+    "$dungeon_respawn/conf/dungeonrespawn.conf.dist"
+  sed -i \
+    -e 's/if (!player)/if (!player || !player->GetSession() || player->GetSession()->IsBot())/g' \
+    -e '/playersToTeleport.erase(it);/a\            break;' \
+    "$dungeon_respawn/src/DungeonRespawn.cpp"
 fi
 
 # Compatibility patches retained from the Vagrant implementation.
