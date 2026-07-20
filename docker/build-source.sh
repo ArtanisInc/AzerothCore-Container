@@ -15,6 +15,7 @@ mkdir -p /azerothcore/modules
 
 modules=(
   "mod-playerbots;https://github.com/mod-playerbots/mod-playerbots.git"
+  "mod-multibot-bridge;https://github.com/Wishmaster117/mod-multibot-bridge.git"
   "mod-ah-bot-plus;https://github.com/NathanHandley/mod-ah-bot-plus.git"
   "mod-autobalance;https://github.com/azerothcore/mod-autobalance.git"
   "mod-aoe-loot;https://github.com/azerothcore/mod-aoe-loot.git"
