@@ -1,7 +1,7 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot, 32 modules additionnels et trois
+AzerothCore WoW 3.3.5a, la branche Playerbot, 31 modules additionnels et trois
 scripts Lua personnalisés.
 
 ## Prérequis
@@ -43,7 +43,7 @@ Podman, ils fonctionnent directement si le paquet de compatibilité
 `podman-docker` est installé. Sans ce paquet, utilisez les commandes
 `podman compose` indiquées dans ce document.
 
-Le premier lancement est long : Docker clone 32 modules, compile le core,
+Le premier lancement est long : Docker clone 31 modules, compile le core,
 importe les bases et télécharge les données client.
 
 ```bash
@@ -107,7 +107,7 @@ dans `.env.example`. Les variables les plus importantes sont :
 
 ## Modules inclus
 
-Les 32 modules suivants sont clonés et compilés statiquement dans
+Les 31 modules suivants sont clonés et compilés statiquement dans
 `worldserver` :
 
 | # | Module | Fonction | Dépôt |
@@ -115,7 +115,7 @@ Les 32 modules suivants sont clonés et compilés statiquement dans
 | 1 | `mod-playerbots` | Ajoute les joueurs contrôlés par IA et leur base dédiée. | [mod-playerbots/mod-playerbots](https://github.com/mod-playerbots/mod-playerbots) |
 | 2 | `mod-ah-bot-plus` | Vend et achète aux hôtels des ventes avec prix, stocks, catégories et plusieurs personnages vendeurs configurables. | [NathanHandley/mod-ah-bot-plus](https://github.com/NathanHandley/mod-ah-bot-plus) |
 | 3 | `mod-autobalance` | Adapte les donjons et raids aux groupes réduits ou au jeu solo. | [azerothcore/mod-autobalance](https://github.com/azerothcore/mod-autobalance) |
-| 4 | `mod-aoe-loot` | Installé mais désactivé par défaut pour éviter les conflits avec les modules qui modifient le butin des créatures. | [azerothcore/mod-aoe-loot](https://github.com/azerothcore/mod-aoe-loot) |
+| 4 | `mod-aoe-loot` | Permet de ramasser en une fois le butin des créatures proches. | [azerothcore/mod-aoe-loot](https://github.com/azerothcore/mod-aoe-loot) |
 | 5 | `mod-learn-spells` | Apprend automatiquement les sorts de classe pendant la progression. | [azerothcore/mod-learn-spells](https://github.com/azerothcore/mod-learn-spells) |
 | 6 | `mod-solo-lfg` | Rend la recherche de groupe exploitable seul ou sur un petit serveur. | [azerothcore/mod-solo-lfg](https://github.com/azerothcore/mod-solo-lfg) |
 | 7 | `mod-challenge-modes` | Propose par personnage des défis de progression : Hardcore, Semi-Hardcore, Self Crafted, qualité limitée, XP réduite/quête uniquement et Iron Man, avec récompenses de paliers. | [ZhengPeiRu21/mod-challenge-modes](https://github.com/ZhengPeiRu21/mod-challenge-modes) |
@@ -141,9 +141,8 @@ Les 32 modules suivants sont clonés et compilés statiquement dans
 | 27 | `portals-in-all-capitals` | Ajoute automatiquement par SQL 24 portails près du maître de vol des capitales. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
 | 28 | `mod-gain-honor-guard` | Accorde de l'honneur pour les gardes et/ou élites non gris, hors arène et joueur vivant, avec taux, annonces et partage de groupe configurables. | [azerothcore/mod-gain-honor-guard](https://github.com/azerothcore/mod-gain-honor-guard) |
 | 29 | `mod-dungeon-master` | Ajoute des donjons procéduraux jouables seul ou en groupe, avec difficulté, thèmes, mise à l'échelle, récompenses et mode roguelike à affixes. | [InstanceForge/mod-dungeon-master](https://github.com/InstanceForge/mod-dungeon-master) |
-| 30 | `mod-no-item-binding` | Installé mais désactivé par défaut : son hook sur les objets ramassés est incompatible avec la chaîne de loot actuelle. | [Nevaden/mod-no-item-binding](https://github.com/Nevaden/mod-no-item-binding) |
-| 31 | `mod-auto-gather` | Récolte automatiquement à proximité les plantes, minerais et créatures dépeçables admissibles, tout en conservant les prérequis et gains de compétence. | [thanhtong89/mod-auto-gather](https://github.com/thanhtong89/mod-auto-gather) |
-| 32 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
+| 30 | `mod-auto-gather` | Récolte automatiquement à proximité les plantes, minerais et créatures dépeçables admissibles, tout en conservant les prérequis et gains de compétence. | [thanhtong89/mod-auto-gather](https://github.com/thanhtong89/mod-auto-gather) |
+| 31 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
 
 Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptations
 de compatibilité nécessaires sont appliquées automatiquement et de façon

@@ -22,7 +22,6 @@ modules=(
   "mod-solo-lfg;https://github.com/azerothcore/mod-solo-lfg.git"
   "mod-challenge-modes;https://github.com/ZhengPeiRu21/mod-challenge-modes.git"
   "mod-dungeon-master;https://github.com/InstanceForge/mod-dungeon-master.git"
-  "mod-no-item-binding;https://github.com/Nevaden/mod-no-item-binding.git"
   "mod-auto-gather;https://github.com/thanhtong89/mod-auto-gather.git"
   "DungeonRespawn;https://github.com/riksbyville/DungeonRespawn.git"
   "mod-player-bot-level-brackets;https://github.com/DustinHendrickson/mod-player-bot-level-brackets.git"
@@ -53,13 +52,6 @@ for item in "${modules[@]}"; do
   git clone --depth 1 "$url" "/azerothcore/modules/$name"
 done
 
-# Keep AoE Loot installed but disabled: its packet-level corpse merging can
-# conflict with modules that also rebuild or consume creature loot.
-aoe_loot_conf=/azerothcore/modules/mod-aoe-loot/conf/mod_aoe_loot.conf.dist
-if [[ -f "$aoe_loot_conf" ]]; then
-  sed -i 's/^AOELoot.Enable = 1$/AOELoot.Enable = 0/' "$aoe_loot_conf"
-fi
-
 # The Playerbot branch uses creature.id rather than the newer id1 column used
 # by mod-dungeon-master in its SQL and runtime queries. Its default roguelike
 # buffs are documented but left commented, which makes ConfigMgr emit a
@@ -80,24 +72,6 @@ fi
 auto_gather=/azerothcore/modules/mod-auto-gather/src/AutoGather.cpp
 if [[ -f "$auto_gather" ]]; then
   sed -i 's/if (!cfgEnable)/if (!cfgEnable || !player->GetSession() || player->GetSession()->IsBot())/g' "$auto_gather"
-fi
-
-# The item templates are already unbound globally by the module SQL. Keep its
-# runtime safety hooks for real players, but do not mutate items while the
-# Playerbot subsystem is loading and equipping its large random-bot pool.
-no_item_binding=/azerothcore/modules/mod-no-item-binding/src/mod_no_item_binding.cpp
-if [[ -f "$no_item_binding" ]]; then
-  sed -i \
-    -e 's/Player\* \/\*player\*\//Player* player/g' \
-    -e 's/Unbind(item);/Unbind(player, item);/g' \
-    -e 's/static void Unbind(Item\* item)/static void Unbind(Player* player, Item* item)/' \
-    -e 's/if (!sConfigMgr->GetOption<bool>("NoItemBinding.Enable", true))/if (!sConfigMgr->GetOption<bool>("NoItemBinding.Enable", true) || !player || !player->GetSession() || player->GetSession()->IsBot())/' \
-    "$no_item_binding"
-fi
-
-no_item_binding_conf=/azerothcore/modules/mod-no-item-binding/conf/mod_no_item_binding.conf.dist
-if [[ -f "$no_item_binding_conf" ]]; then
-  sed -i 's/^NoItemBinding.Enable = 1$/NoItemBinding.Enable = 0/' "$no_item_binding_conf"
 fi
 
 # Dungeon Respawn is a player-facing feature; random Playerbots must not fill
