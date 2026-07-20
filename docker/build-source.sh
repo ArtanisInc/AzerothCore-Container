@@ -95,6 +95,11 @@ if [[ -f "$no_item_binding" ]]; then
     "$no_item_binding"
 fi
 
+no_item_binding_conf=/azerothcore/modules/mod-no-item-binding/conf/mod_no_item_binding.conf.dist
+if [[ -f "$no_item_binding_conf" ]]; then
+  sed -i 's/^NoItemBinding.Enable = 1$/NoItemBinding.Enable = 0/' "$no_item_binding_conf"
+fi
+
 # Dungeon Respawn is a player-facing feature; random Playerbots must not fill
 # its persistent character-state table. Also stop iterating after erasing the
 # logout marker, as the upstream iterator is invalid after erase().
