@@ -53,6 +53,13 @@ for item in "${modules[@]}"; do
   git clone --depth 1 "$url" "/azerothcore/modules/$name"
 done
 
+# Keep AoE Loot installed but disabled: its packet-level corpse merging can
+# conflict with modules that also rebuild or consume creature loot.
+aoe_loot_conf=/azerothcore/modules/mod-aoe-loot/conf/mod_aoe_loot.conf.dist
+if [[ -f "$aoe_loot_conf" ]]; then
+  sed -i 's/^AOELoot.Enable = 1$/AOELoot.Enable = 0/' "$aoe_loot_conf"
+fi
+
 # The Playerbot branch uses creature.id rather than the newer id1 column used
 # by mod-dungeon-master in its SQL and runtime queries. Its default roguelike
 # buffs are documented but left commented, which makes ConfigMgr emit a
