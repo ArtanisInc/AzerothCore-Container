@@ -150,8 +150,16 @@ Les 33 modules suivants sont clonés et compilés statiquement dans
 | 32 | `mod-multibot-bridge` | Fournit à l'addon client MultiBot-Chatless un pont structuré vers Playerbots afin d'actualiser son interface sans analyser les réponses du chat. | [Wishmaster117/mod-multibot-bridge](https://github.com/Wishmaster117/mod-multibot-bridge) |
 | 33 | `mod-npc-enchanter` | Ajoute un PNJ qui applique des enchantements à l'équipement, placé près des entraîneurs d'enchantement dans les huit capitales. | [azerothcore/mod-npc-enchanter](https://github.com/azerothcore/mod-npc-enchanter) |
 
-`mod-multibot-bridge` nécessite l'addon [MultiBot-Chatless](https://github.com/Wishmaster117/MultiBot-Chatless),
-installé côté client dans `Interface/AddOns/MultiBot`.
+### Addons clients
+
+- `mod-multibot-bridge` nécessite l'addon
+  [MultiBot-Chatless](https://github.com/Wishmaster117/MultiBot-Chatless),
+  installé côté client dans `Interface/AddOns/MultiBot`.
+- `lua-battlepass` fournit l'addon
+  [`BattlePass`](https://github.com/Shonik/lua-battlepass/tree/main/BattlePass),
+  à copier dans `Interface/AddOns/BattlePass`. Les commandes `/bp` et
+  `/battlepass` ouvrent son interface. L'addon reste facultatif : le PNJ et les
+  commandes serveur permettent d'utiliser le battle pass sans interface client.
 
 Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptations
 de compatibilité nécessaires sont appliquées automatiquement et de façon
