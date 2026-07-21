@@ -1,7 +1,7 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot, 32 modules additionnels et trois
+AzerothCore WoW 3.3.5a, la branche Playerbot, 33 modules additionnels et trois
 scripts Lua personnalisés.
 
 Les images de compilation et d'exécution reposent sur Ubuntu 26.04. Le core
@@ -47,7 +47,7 @@ Podman, ils fonctionnent directement si le paquet de compatibilité
 `podman-docker` est installé. Sans ce paquet, utilisez les commandes
 `podman compose` indiquées dans ce document.
 
-Le premier lancement est long : Docker clone 32 modules, compile le core,
+Le premier lancement est long : Docker clone 33 modules, compile le core,
 importe les bases et télécharge les données client.
 
 ```bash
@@ -111,7 +111,7 @@ dans `.env.example`. Les variables les plus importantes sont :
 
 ## Modules inclus
 
-Les 32 modules suivants sont clonés et compilés statiquement dans
+Les 33 modules suivants sont clonés et compilés statiquement dans
 `worldserver` :
 
 | # | Module | Fonction | Dépôt |
@@ -121,7 +121,7 @@ Les 32 modules suivants sont clonés et compilés statiquement dans
 | 3 | `mod-autobalance` | Adapte les donjons et raids aux groupes réduits ou au jeu solo. | [azerothcore/mod-autobalance](https://github.com/azerothcore/mod-autobalance) |
 | 4 | `mod-aoe-loot` | Permet de ramasser en une fois le butin des créatures proches. | [azerothcore/mod-aoe-loot](https://github.com/azerothcore/mod-aoe-loot) |
 | 5 | `mod-learn-spells` | Apprend automatiquement les sorts de classe pendant la progression. | [azerothcore/mod-learn-spells](https://github.com/azerothcore/mod-learn-spells) |
-| 6 | `mod-solo-lfg` | Rend la recherche de groupe exploitable seul ou sur un petit serveur. | [azerothcore/mod-solo-lfg](https://github.com/azerothcore/mod-solo-lfg) |
+| 6 | `mod-solo-lfg` | Permet les groupes incomplets, mais reste désactivé dans le profil fourni afin que les Playerbots remplissent normalement les cinq rôles du Dungeon Finder. | [azerothcore/mod-solo-lfg](https://github.com/azerothcore/mod-solo-lfg) |
 | 7 | `mod-challenge-modes` | Propose par personnage des défis de progression : Hardcore, Semi-Hardcore, Self Crafted, qualité limitée, XP réduite/quête uniquement et Iron Man, avec récompenses de paliers. | [ZhengPeiRu21/mod-challenge-modes](https://github.com/ZhengPeiRu21/mod-challenge-modes) |
 | 8 | `mod-player-bot-level-brackets` | Contrôle la distribution des niveaux des Playerbots par tranches. | [DustinHendrickson/mod-player-bot-level-brackets](https://github.com/DustinHendrickson/mod-player-bot-level-brackets) |
 | 9 | `mod-junk-to-gold` | Vend automatiquement les objets gris au moment où le joueur les ramasse. | [kadeshar/mod-junk-to-gold](https://github.com/kadeshar/mod-junk-to-gold) |
@@ -148,6 +148,7 @@ Les 32 modules suivants sont clonés et compilés statiquement dans
 | 30 | `mod-auto-gather` | Récolte automatiquement à proximité les plantes, minerais et créatures dépeçables admissibles, tout en conservant les prérequis et gains de compétence. | [thanhtong89/mod-auto-gather](https://github.com/thanhtong89/mod-auto-gather) |
 | 31 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
 | 32 | `mod-multibot-bridge` | Fournit à l'addon client MultiBot-Chatless un pont structuré vers Playerbots afin d'actualiser son interface sans analyser les réponses du chat. | [Wishmaster117/mod-multibot-bridge](https://github.com/Wishmaster117/mod-multibot-bridge) |
+| 33 | `mod-npc-enchanter` | Ajoute un PNJ qui applique des enchantements à l'équipement, placé près des entraîneurs d'enchantement dans les huit capitales. | [azerothcore/mod-npc-enchanter](https://github.com/azerothcore/mod-npc-enchanter) |
 
 `mod-multibot-bridge` nécessite l'addon [MultiBot-Chatless](https://github.com/Wishmaster117/MultiBot-Chatless),
 installé côté client dans `Interface/AddOns/MultiBot`.

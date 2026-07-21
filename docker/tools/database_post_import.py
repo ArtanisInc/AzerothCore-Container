@@ -83,6 +83,18 @@ REAGENT_BANK_CITY_SPAWNS = (
     (8000121, 571, 5979.88, 608.82, 651.260, 5.9346, "Dalaran Alliance"),
 )
 
+ENCHANTER_CAPITAL_SPAWNS = (
+    # guid, map, x, y, z, orientation, capital
+    (8000130, 0, -8862.15, 800.30, 96.520, 0.4100, "Stormwind"),
+    (8000131, 0, -4805.40, -1182.75, 512.560, 4.0200, "Ironforge"),
+    (8000132, 1, 10141.80, 2324.10, 1333.080, 5.7600, "Darnassus"),
+    (8000133, 530, -3887.10, -11494.10, -136.060, 5.0400, "Exodar"),
+    (8000134, 1, 1908.15, -4432.70, 24.900, 5.9800, "Orgrimmar"),
+    (8000135, 1, -1114.80, 43.70, 140.520, 2.1500, "Thunder Bluff"),
+    (8000136, 0, 1478.30, 278.10, -62.080, 5.7600, "Undercity"),
+    (8000137, 530, 9958.00, -7252.30, 32.160, 0.8500, "Silvermoon"),
+)
+
 
 def import_sql(database: str, path: Path, label: str) -> None:
     print(f"[INFO] {label}: importing {path.name}")
@@ -265,6 +277,71 @@ def ensure_reagent_bank_city_npcs() -> None:
     print(f"[OK] mod-reagent-bank-account: {imported} city NPCs installed")
 
 
+def ensure_enchanter_capital_npcs() -> None:
+    """Spawn one upstream enchanter beside the profession trainers in each capital."""
+    template = scalar(
+        "SELECT COUNT(*) FROM creature_template "
+        "WHERE entry=601015 AND ScriptName='npc_enchantment'",
+        "acore_world",
+        "0",
+    )
+    if template != "1":
+        raise ToolError("mod-npc-enchanter capital NPCs: creature template 601015 is unavailable")
+
+    guid_list = ",".join(str(spawn[0]) for spawn in ENCHANTER_CAPITAL_SPAWNS)
+    conflicts = mysql(
+        "SELECT CONCAT(guid, ':', id) FROM creature "
+        f"WHERE guid IN ({guid_list}) "
+        "AND (id<>601015 OR Comment NOT LIKE 'AzerothCore-Container enchanter:%')",
+        "acore_world",
+    )
+    if conflicts:
+        raise ToolError(f"mod-npc-enchanter GUID conflict(s): {conflicts.replace(chr(10), ', ')}")
+
+    current = int(
+        scalar(
+            "SELECT COUNT(*) FROM creature "
+            f"WHERE guid IN ({guid_list}) AND id=601015 "
+            "AND Comment LIKE 'AzerothCore-Container enchanter: v1:%'",
+            "acore_world",
+            "0",
+        )
+    )
+    if current == len(ENCHANTER_CAPITAL_SPAWNS):
+        print(f"[OK] mod-npc-enchanter: {current} capital NPCs already present")
+        return
+
+    rows = ",".join(
+        "("
+        f"{guid},601015,{map_id},0,0,1,1,0,{x},{y},{z},{orientation},"
+        f"120,0,0,1,0,0,0,0,0,'',NULL,0,'AzerothCore-Container enchanter: v1: {capital}'"
+        ")"
+        for guid, map_id, x, y, z, orientation, capital in ENCHANTER_CAPITAL_SPAWNS
+    )
+    mysql(
+        f"DELETE FROM creature WHERE guid IN ({guid_list}); "
+        "INSERT INTO creature "
+        "(guid,id,map,zoneId,areaId,spawnMask,phaseMask,equipment_id,"
+        "position_x,position_y,position_z,orientation,spawntimesecs,wander_distance,"
+        "currentwaypoint,curhealth,curmana,MovementType,npcflag,unit_flags,dynamicflags,"
+        "ScriptName,VerifiedBuild,CreateObject,Comment) VALUES "
+        f"{rows}",
+        "acore_world",
+    )
+    imported = int(
+        scalar(
+            "SELECT COUNT(*) FROM creature "
+            f"WHERE guid IN ({guid_list}) AND id=601015 "
+            "AND Comment LIKE 'AzerothCore-Container enchanter: v1:%'",
+            "acore_world",
+            "0",
+        )
+    )
+    if imported != len(ENCHANTER_CAPITAL_SPAWNS):
+        raise ToolError(f"mod-npc-enchanter capital NPC import returned {imported}")
+    print(f"[OK] mod-npc-enchanter: {imported} capital NPCs installed")
+
+
 def ensure_battlepass_npc() -> None:
     """Create the NPC template expected by the Lua module (not shipped upstream)."""
     if scalar("SELECT COUNT(*) FROM creature_template WHERE entry=90100", "acore_world", "0") != "0":
@@ -426,6 +503,10 @@ def main() -> int:
         MODULES_DIR / "mod-transmog/data/sql/db-world",
         ("trasm_world_NPC.sql", "transmog_npc.sql", "transmog.sql", "mod_transmog_world.sql", "world.sql"),
     )
+    enchanter_world = first_existing(
+        MODULES_DIR / "mod-npc-enchanter/data/sql/db-world",
+        ("npc_enchanter.sql",),
+    )
     capitals_portals = first_existing(
         MODULES_DIR / "portals-in-all-capitals",
         ("portals-in-all-capitals.up.sql",),
@@ -446,6 +527,12 @@ def main() -> int:
         "SELECT COUNT(*) FROM creature_template WHERE ScriptName='npc_transmogrifier'",
     )
     ensure_transmog_capital_npcs()
+    ensure_world_data(
+        enchanter_world,
+        "mod-npc-enchanter world",
+        "SELECT COUNT(*) FROM creature_template WHERE entry=601015 AND ScriptName='npc_enchantment'",
+    )
+    ensure_enchanter_capital_npcs()
     ensure_world_data(
         capitals_portals,
         "portals-in-all-capitals",

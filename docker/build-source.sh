@@ -46,6 +46,7 @@ modules=(
   "mod-gunship-skip;https://github.com/BlaMacfly/mod-gunship-skip.git"
   "portals-in-all-capitals;https://github.com/azerothcore/portals-in-all-capitals.git"
   "mod-gain-honor-guard;https://github.com/azerothcore/mod-gain-honor-guard.git"
+  "mod-npc-enchanter;https://github.com/azerothcore/mod-npc-enchanter.git"
 )
 
 for item in "${modules[@]}"; do
