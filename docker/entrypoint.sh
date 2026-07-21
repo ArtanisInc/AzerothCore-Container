@@ -90,8 +90,7 @@ PY
   fi
 fi
 
-# Ensure the absolute ALE script directory exists. The world image already
-# contains the versioned Lua Battlepass files at this path.
+# Ensure the absolute ALE script directory exists.
 mkdir -p /azerothcore/env/dist/bin/lua_scripts
 
 if [[ "${ACORE_COMPONENT:-}" == dbimport ]]; then

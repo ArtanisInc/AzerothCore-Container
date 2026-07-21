@@ -1,7 +1,7 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot, 33 modules additionnels et trois
+AzerothCore WoW 3.3.5a, la branche Playerbot, 32 modules additionnels et trois
 scripts Lua personnalisés.
 
 Les images de compilation et d'exécution reposent sur Ubuntu 26.04. Le core
@@ -47,7 +47,7 @@ Podman, ils fonctionnent directement si le paquet de compatibilité
 `podman-docker` est installé. Sans ce paquet, utilisez les commandes
 `podman compose` indiquées dans ce document.
 
-Le premier lancement est long : Docker clone 33 modules, compile le core,
+Le premier lancement est long : Docker clone 32 modules, compile le core,
 importe les bases et télécharge les données client.
 
 ```bash
@@ -111,7 +111,7 @@ dans `.env.example`. Les variables les plus importantes sont :
 
 ## Modules inclus
 
-Les 33 modules suivants sont clonés et compilés statiquement dans
+Les 32 modules suivants sont clonés et compilés statiquement dans
 `worldserver` :
 
 | # | Module | Fonction | Dépôt |
@@ -139,27 +139,21 @@ Les 33 modules suivants sont clonés et compilés statiquement dans
 | 21 | `NoProfessionLimit` | Autorise jusqu'aux 11 professions principales de WotLK ; la limite native du core est également fixée à 11. | [AlsoNotMehh/NoProfessionLimit](https://github.com/AlsoNotMehh/NoProfessionLimit) |
 | 22 | `mod-no-hearthstone-cooldown` | Supprime immédiatement le cooldown de la pierre de foyer. | [BytesGalore/mod-no-hearthstone-cooldown](https://github.com/BytesGalore/mod-no-hearthstone-cooldown) |
 | 23 | `mod-autofish` | Automatise la capture, le butin et la relance de la pêche. | [Flerp/mod-autofish](https://github.com/Flerp/mod-autofish) |
-| 24 | `lua-battlepass` | Ajoute un battle pass Lua, ses quêtes, récompenses et commandes. | [Shonik/lua-battlepass](https://github.com/Shonik/lua-battlepass) |
-| 25 | `mod-skip-dk-starting-area` | Permet, selon sa configuration, de passer automatiquement ou facultativement la zone de départ des chevaliers de la mort. | [d23monkey/mod-skip-dk-starting-area](https://github.com/d23monkey/mod-skip-dk-starting-area) |
-| 26 | `mod-gunship-skip` | Ajoute sur Muradin/Saurfang une option solo qui termine la Canonnière ICC, distribue son butin par courrier et téléporte après le combat. | [BlaMacfly/mod-gunship-skip](https://github.com/BlaMacfly/mod-gunship-skip) |
-| 27 | `portals-in-all-capitals` | Ajoute automatiquement par SQL 24 portails près des entraîneurs de mages et de portails des capitales. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
-| 28 | `mod-gain-honor-guard` | Accorde de l'honneur pour les gardes et/ou élites non gris, hors arène et joueur vivant, avec taux, annonces et partage de groupe configurables. | [azerothcore/mod-gain-honor-guard](https://github.com/azerothcore/mod-gain-honor-guard) |
-| 29 | `mod-dungeon-master` | Ajoute des donjons procéduraux jouables seul ou en groupe, avec difficulté, thèmes, mise à l'échelle, récompenses et mode roguelike à affixes. | [InstanceForge/mod-dungeon-master](https://github.com/InstanceForge/mod-dungeon-master) |
-| 30 | `mod-auto-gather` | Récolte automatiquement à proximité les plantes, minerais et créatures dépeçables admissibles, tout en conservant les prérequis et gains de compétence. | [thanhtong89/mod-auto-gather](https://github.com/thanhtong89/mod-auto-gather) |
-| 31 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
-| 32 | `mod-multibot-bridge` | Fournit à l'addon client MultiBot-Chatless un pont structuré vers Playerbots afin d'actualiser son interface sans analyser les réponses du chat. | [Wishmaster117/mod-multibot-bridge](https://github.com/Wishmaster117/mod-multibot-bridge) |
-| 33 | `mod-npc-enchanter` | Ajoute un PNJ qui applique des enchantements à l'équipement, placé près des entraîneurs d'enchantement dans les huit capitales. | [azerothcore/mod-npc-enchanter](https://github.com/azerothcore/mod-npc-enchanter) |
+| 24 | `mod-skip-dk-starting-area` | Permet, selon sa configuration, de passer automatiquement ou facultativement la zone de départ des chevaliers de la mort. | [d23monkey/mod-skip-dk-starting-area](https://github.com/d23monkey/mod-skip-dk-starting-area) |
+| 25 | `mod-gunship-skip` | Ajoute sur Muradin/Saurfang une option solo qui termine la Canonnière ICC, distribue son butin par courrier et téléporte après le combat. | [BlaMacfly/mod-gunship-skip](https://github.com/BlaMacfly/mod-gunship-skip) |
+| 26 | `portals-in-all-capitals` | Ajoute automatiquement par SQL 24 portails près des entraîneurs de mages et de portails des capitales. | [azerothcore/portals-in-all-capitals](https://github.com/azerothcore/portals-in-all-capitals) |
+| 27 | `mod-gain-honor-guard` | Accorde de l'honneur pour les gardes et/ou élites non gris, hors arène et joueur vivant, avec taux, annonces et partage de groupe configurables. | [azerothcore/mod-gain-honor-guard](https://github.com/azerothcore/mod-gain-honor-guard) |
+| 28 | `mod-dungeon-master` | Ajoute des donjons procéduraux jouables seul ou en groupe, avec difficulté, thèmes, mise à l'échelle, récompenses et mode roguelike à affixes. | [InstanceForge/mod-dungeon-master](https://github.com/InstanceForge/mod-dungeon-master) |
+| 29 | `mod-auto-gather` | Récolte automatiquement à proximité les plantes, minerais et créatures dépeçables admissibles, tout en conservant les prérequis et gains de compétence. | [thanhtong89/mod-auto-gather](https://github.com/thanhtong89/mod-auto-gather) |
+| 30 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
+| 31 | `mod-multibot-bridge` | Fournit à l'addon client MultiBot-Chatless un pont structuré vers Playerbots afin d'actualiser son interface sans analyser les réponses du chat. | [Wishmaster117/mod-multibot-bridge](https://github.com/Wishmaster117/mod-multibot-bridge) |
+| 32 | `mod-npc-enchanter` | Ajoute un PNJ qui applique des enchantements à l'équipement, placé près des entraîneurs d'enchantement dans les huit capitales. | [azerothcore/mod-npc-enchanter](https://github.com/azerothcore/mod-npc-enchanter) |
 
 ### Addons clients
 
 - `mod-multibot-bridge` nécessite l'addon
   [MultiBot-Chatless](https://github.com/Wishmaster117/MultiBot-Chatless),
   installé côté client dans `Interface/AddOns/MultiBot`.
-- `lua-battlepass` fournit l'addon
-  [`BattlePass`](https://github.com/Shonik/lua-battlepass/tree/main/BattlePass),
-  à copier dans `Interface/AddOns/BattlePass`. Les commandes `/bp` et
-  `/battlepass` ouvrent son interface. L'addon reste facultatif : le PNJ et les
-  commandes serveur permettent d'utiliser le battle pass sans interface client.
 
 Certains dépôts utilisent encore des API AzerothCore anciennes. Les adaptations
 de compatibilité nécessaires sont appliquées automatiquement et de façon

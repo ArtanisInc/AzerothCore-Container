@@ -81,9 +81,6 @@ ENV ACORE_COMPONENT=worldserver \
 COPY --from=build --chown=acore:acore /azerothcore/env/dist/bin/worldserver /azerothcore/env/dist/bin/worldserver
 COPY --from=build --chown=acore:acore /azerothcore/env/dist/bin/lua_scripts/ /azerothcore/env/dist/bin/lua_scripts/
 COPY --chown=acore:acore docker/lua_scripts/ /azerothcore/env/dist/bin/lua_scripts/
-# lua-battlepass targets an older Eluna-style Quest API. ALE exposes IsDaily.
-RUN sed -i 's/quest:IsDailyQuest()/quest:IsDaily()/g' \
-      /azerothcore/env/dist/bin/lua_scripts/battlepass/06_BP_Events.lua
 # Playerbots initializes its dedicated database at worldserver startup and
 # resolves these SQL files from the source-tree module path.
 COPY --from=build --chown=acore:acore /azerothcore/modules/mod-playerbots/data/ /azerothcore/modules/mod-playerbots/data/

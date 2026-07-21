@@ -41,7 +41,6 @@ modules=(
   "NoProfessionLimit;https://github.com/AlsoNotMehh/NoProfessionLimit.git"
   "mod-no-hearthstone-cooldown;https://github.com/BytesGalore/mod-no-hearthstone-cooldown.git"
   "mod-autofish;https://github.com/Flerp/mod-autofish.git"
-  "lua-battlepass;https://github.com/Shonik/lua-battlepass.git"
   "mod-skip-dk-starting-area;https://github.com/d23monkey/mod-skip-dk-starting-area.git"
   "mod-gunship-skip;https://github.com/BlaMacfly/mod-gunship-skip.git"
   "portals-in-all-capitals;https://github.com/azerothcore/portals-in-all-capitals.git"
@@ -140,9 +139,6 @@ cmake --build . --parallel "$BUILD_JOBS"
 cmake --install .
 
 mkdir -p /azerothcore/env/dist/bin/lua_scripts
-if [[ -d /azerothcore/modules/lua-battlepass/lua_scripts ]]; then
-  cp -a /azerothcore/modules/lua-battlepass/lua_scripts/. /azerothcore/env/dist/bin/lua_scripts/
-fi
 
 {
   printf 'core\t%s\t%s\n' "$(git -C /azerothcore rev-parse HEAD)" "$(git -C /azerothcore log -1 --format=%cI)"

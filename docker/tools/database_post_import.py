@@ -342,35 +342,18 @@ def ensure_enchanter_capital_npcs() -> None:
     print(f"[OK] mod-npc-enchanter: {imported} capital NPCs installed")
 
 
-def ensure_battlepass_npc() -> None:
-    """Create the NPC template expected by the Lua module (not shipped upstream)."""
-    if scalar("SELECT COUNT(*) FROM creature_template WHERE entry=90100", "acore_world", "0") != "0":
-        print("[OK] lua-battlepass NPC template already present")
-        return
-    source = scalar(
-        "SELECT entry FROM creature_template WHERE (npcflag & 1)=1 ORDER BY entry LIMIT 1",
-        "acore_world",
-    )
-    if not source:
-        raise ToolError("lua-battlepass NPC: no gossip NPC template is available to clone")
-    raw_columns = mysql(
-        "SELECT COLUMN_NAME FROM information_schema.COLUMNS "
-        "WHERE TABLE_SCHEMA='acore_world' AND TABLE_NAME='creature_template' "
-        "AND COLUMN_NAME<>'entry' ORDER BY ORDINAL_POSITION",
-        "acore_world",
-    )
-    columns = [column for column in raw_columns.splitlines() if column]
-    if not columns:
-        raise ToolError("lua-battlepass NPC: creature_template columns not found")
-    quoted = ",".join(f"`{column.replace('`', '``')}`" for column in columns)
+def remove_legacy_battlepass_data() -> None:
+    """Remove data installed by the former lua-battlepass integration."""
     mysql(
-        f"INSERT INTO creature_template (`entry`,{quoted}) "
-        f"SELECT 90100,{quoted} FROM creature_template WHERE entry={int(source)} LIMIT 1; "
-        "UPDATE creature_template SET name='Battle Pass Master', "
-        "subname='Season Rewards', npcflag=1, AIName='', ScriptName='' WHERE entry=90100",
+        "DELETE c FROM creature c JOIN creature_template ct ON ct.entry=c.id "
+        "WHERE c.id=90100 AND ct.name='Battle Pass Master'; "
+        "DELETE FROM creature_template WHERE entry=90100 AND name='Battle Pass Master'; "
+        "DROP TABLE IF EXISTS battlepass_progress_sources, battlepass_levels, "
+        "battlepass_reward_types, battlepass_config",
         "acore_world",
     )
-    print(f"[OK] lua-battlepass NPC template created from safe gossip template {source}")
+    mysql("DROP TABLE IF EXISTS character_battlepass", "acore_characters")
+    print("[OK] Legacy Battle Pass data removed")
 
 
 def ensure_mount_scaling_data() -> None:
@@ -511,7 +494,6 @@ def main() -> int:
         MODULES_DIR / "portals-in-all-capitals",
         ("portals-in-all-capitals.up.sql",),
     )
-    battlepass = MODULES_DIR / "lua-battlepass/sql"
 
     ensure_transmog_characters_schema()
     ensure_schema("acore_characters", reagent_char, "mod-reagent-bank-account characters")
@@ -539,13 +521,7 @@ def main() -> int:
         "SELECT COUNT(*) FROM gameobject WHERE guid BETWEEN 2000000 AND 2000023",
         minimum=24,
     )
-    ensure_schema("acore_world", first_existing(battlepass, ("battlepass_world.sql",)), "lua-battlepass world")
-    ensure_schema(
-        "acore_characters",
-        first_existing(battlepass, ("battlepass_characters.sql",)),
-        "lua-battlepass characters",
-    )
-    ensure_battlepass_npc()
+    remove_legacy_battlepass_data()
     ensure_mount_scaling_data()
     ensure_better_professions_density()
     ensure_soap_account()
