@@ -23,6 +23,7 @@ modules=(
   "mod-learn-spells;https://github.com/azerothcore/mod-learn-spells.git"
   "mod-solo-lfg;https://github.com/azerothcore/mod-solo-lfg.git"
   "mod-challenge-modes;https://github.com/ZhengPeiRu21/mod-challenge-modes.git"
+  "mod-individual-progression;https://github.com/ZhengPeiRu21/mod-individual-progression.git"
   "mod-dungeon-master;https://github.com/InstanceForge/mod-dungeon-master.git"
   "mod-auto-gather;https://github.com/thanhtong89/mod-auto-gather.git"
   "DungeonRespawn;https://github.com/riksbyville/DungeonRespawn.git"
@@ -33,6 +34,7 @@ modules=(
   "mod-reagent-bank-account;https://github.com/Brian-Aldridge/mod-reagent-bank-account.git"
   "mod-daily-reset;https://github.com/binboupan/mod-daily-reset.git"
   "mod-mount-scaling;https://github.com/claudevandort/mod-mount-scaling.git"
+  "mod-level-one-mounts;https://github.com/tomcoffingiii/mod-level-one-mounts.git"
   "mod-ale;https://github.com/azerothcore/mod-ale.git"
   "mod-quest-loot-party;https://github.com/pangolp/mod-quest-loot-party.git"
   "mod-TimeIsTime;https://github.com/dunjeon/mod-TimeIsTime.git"
@@ -53,6 +55,23 @@ for item in "${modules[@]}"; do
   IFS=';' read -r name url <<<"$item"
   git clone --depth 1 "$url" "/azerothcore/modules/$name"
 done
+
+# Level One Mounts is distributed as standalone SQL rather than an AzerothCore
+# module. Place its active script in the standard module SQL tree so dbimport
+# discovers it. Individual Progression restores the Vanilla trainer tables, so
+# also apply the level-one requirement to the replacement trainer_spell row.
+level_one_mounts=/azerothcore/modules/mod-level-one-mounts
+if [[ -f "$level_one_mounts/level-one-mounts.sql" ]]; then
+  mkdir -p "$level_one_mounts/data/sql/db-world/base"
+  sed '/^[[:space:]]*use[[:space:]]/Id' "$level_one_mounts/level-one-mounts.sql" \
+    > "$level_one_mounts/data/sql/db-world/base/level-one-mounts.sql"
+  cat >> "$level_one_mounts/data/sql/db-world/base/level-one-mounts.sql" <<'SQL'
+
+UPDATE `trainer_spell`
+SET `ReqLevel` = 1, `MoneyCost` = 4
+WHERE `SpellID` = 33388;
+SQL
+fi
 
 # The Playerbot branch uses creature.id rather than the newer id1 column used
 # by mod-dungeon-master in its SQL and runtime queries. Its default roguelike

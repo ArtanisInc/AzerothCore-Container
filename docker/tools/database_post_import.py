@@ -377,6 +377,61 @@ def ensure_mount_scaling_data() -> None:
     print("[OK] mod-mount-scaling: Apprentice Riding available from level 1")
 
 
+def ensure_level_one_mounts_data() -> None:
+    """Apply and verify the standalone Level One Mounts SQL."""
+    sql_path = (
+        MODULES_DIR
+        / "mod-level-one-mounts/data/sql/db-world/base/level-one-mounts.sql"
+    )
+    if not sql_path.is_file():
+        raise ToolError(f"mod-level-one-mounts SQL is missing: {sql_path}")
+
+    mysql(database="acore_world", input_file=sql_path, capture=False)
+
+    mount_entries = (
+        "1132,2411,2414,5655,5656,5665,5668,5864,5872,5873,8563,8588,"
+        "8591,8592,8595,8629,8631,8632,13321,13322,13331,13332,13333,"
+        "15277,15290,28481,28927,29220,29221,29222,29743,29744,33224,"
+        "33976,43599,46099,46100,46308,47100,49283"
+    )
+    updated_mounts = int(
+        scalar(
+            "SELECT COUNT(*) FROM item_template "
+            f"WHERE entry IN ({mount_entries}) "
+            "AND RequiredLevel=1 AND BuyPrice=10 AND SellPrice=4",
+            "acore_world",
+            "0",
+        )
+    )
+    npc_trainers = int(
+        scalar(
+            "SELECT COUNT(*) FROM npc_trainer "
+            "WHERE ReqSkillLine=762 AND ReqSkillRank=0 "
+            "AND ReqLevel=1 AND MoneyCost=4",
+            "acore_world",
+            "0",
+        )
+    )
+    trainer_spells = int(
+        scalar(
+            "SELECT COUNT(*) FROM trainer_spell "
+            "WHERE SpellID=33388 AND ReqLevel=1 AND MoneyCost=4",
+            "acore_world",
+            "0",
+        )
+    )
+    if updated_mounts != 40 or npc_trainers < 1 or trainer_spells < 1:
+        raise ToolError(
+            "mod-level-one-mounts verification failed: "
+            f"mounts={updated_mounts}/40 npc_trainers={npc_trainers} "
+            f"trainer_spells={trainer_spells}"
+        )
+    print(
+        "[OK] mod-level-one-mounts: 40 mounts and both riding trainer tables "
+        "available from level 1"
+    )
+
+
 def density_multiplier(name: str) -> int:
     raw = os.getenv(name, "3").strip()
     try:
@@ -404,7 +459,7 @@ def ensure_better_professions_density() -> None:
         "acore_world",
     )
 
-    seen: dict[int, str] = {}
+    seen: dict[int, tuple[str, int]] = {}
     for resource, names in BETTER_PROFESSIONS_RESOURCES.items():
         multiplier = density_multiplier(f"BETTER_PROFESSIONS_{resource.upper()}_MULTIPLIER")
         name_list = ",".join("'" + name.replace("'", "''") + "'" for name in names)
@@ -418,13 +473,25 @@ def ensure_better_professions_density() -> None:
         pools = [int(value) for value in mysql(pool_query, "acore_world").splitlines() if value]
         if not pools:
             raise ToolError(f"Better Professions: no {resource} pools matched the current world database")
-        overlap = sorted(pool for pool in pools if pool in seen)
-        if overlap:
+        conflicting = sorted(
+            pool for pool in pools if pool in seen and seen[pool][1] != multiplier
+        )
+        if conflicting:
+            previous_resource, previous_multiplier = seen[conflicting[0]]
             raise ToolError(
-                f"Better Professions: pools classified as both {seen[overlap[0]]} and {resource}: "
-                + ",".join(str(pool) for pool in overlap)
+                f"Better Professions: shared pool {conflicting[0]} has conflicting "
+                f"multipliers ({previous_resource}=x{previous_multiplier}, "
+                f"{resource}=x{multiplier})"
             )
-        seen.update((pool, resource) for pool in pools)
+        shared = sorted(pool for pool in pools if pool in seen)
+        pools = [pool for pool in pools if pool not in seen]
+        seen.update((pool, (resource, multiplier)) for pool in pools)
+        if not pools:
+            print(
+                f"[OK] Better Professions: {resource} uses {len(shared)} shared "
+                f"pools already set to x{multiplier}"
+            )
+            continue
         pool_list = ",".join(str(pool) for pool in pools)
         mysql(
             "INSERT IGNORE INTO custom_better_professions_pool_baseline (pool_entry,base_max_limit) "
@@ -435,7 +502,11 @@ def ensure_better_professions_density() -> None:
             f"WHERE pt.entry IN ({pool_list})",
             "acore_world",
         )
-        print(f"[OK] Better Professions: {len(pools)} {resource} pools set to x{multiplier}")
+        shared_note = f" ({len(shared)} shared)" if shared else ""
+        print(
+            f"[OK] Better Professions: {len(pools)} {resource} pools set to "
+            f"x{multiplier}{shared_note}"
+        )
 
 
 def ensure_soap_account() -> None:
@@ -523,6 +594,7 @@ def main() -> int:
     )
     remove_legacy_battlepass_data()
     ensure_mount_scaling_data()
+    ensure_level_one_mounts_data()
     ensure_better_professions_density()
     ensure_soap_account()
 
