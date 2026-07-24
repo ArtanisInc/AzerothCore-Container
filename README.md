@@ -1,7 +1,7 @@
 # AzerothCore Playerbots — Docker et Podman
 
 Environnement Compose validé avec Docker et Podman pour compiler et exécuter
-AzerothCore WoW 3.3.5a, la branche Playerbot, 32 modules additionnels et trois
+AzerothCore WoW 3.3.5a, la branche Playerbot, 33 modules additionnels et trois
 scripts Lua personnalisés.
 
 Les images de compilation et d'exécution reposent sur Ubuntu 26.04. Le core
@@ -47,7 +47,7 @@ Podman, ils fonctionnent directement si le paquet de compatibilité
 `podman-docker` est installé. Sans ce paquet, utilisez les commandes
 `podman compose` indiquées dans ce document.
 
-Le premier lancement est long : Docker clone 32 modules, compile le core,
+Le premier lancement est long : Docker clone 33 modules, compile le core,
 importe les bases et télécharge les données client.
 
 ```bash
@@ -111,7 +111,7 @@ dans `.env.example`. Les variables les plus importantes sont :
 
 ## Modules inclus
 
-Les 32 modules suivants sont clonés et compilés statiquement dans
+Les 33 modules suivants sont clonés et compilés statiquement dans
 `worldserver` :
 
 | # | Module | Fonction | Dépôt |
@@ -148,6 +148,7 @@ Les 32 modules suivants sont clonés et compilés statiquement dans
 | 30 | `DungeonRespawn` | Après libération de l'esprit dans un donjon ou raid classique, ressuscite le joueur à 50 % de vie et le replace à l'entrée enregistrée. | [riksbyville/DungeonRespawn](https://github.com/riksbyville/DungeonRespawn) |
 | 31 | `mod-multibot-bridge` | Fournit à l'addon client MultiBot-Chatless un pont structuré vers Playerbots afin d'actualiser son interface sans analyser les réponses du chat. | [Wishmaster117/mod-multibot-bridge](https://github.com/Wishmaster117/mod-multibot-bridge) |
 | 32 | `mod-npc-enchanter` | Ajoute un PNJ qui applique des enchantements à l'équipement, placé près des entraîneurs d'enchantement dans les huit capitales. | [azerothcore/mod-npc-enchanter](https://github.com/azerothcore/mod-npc-enchanter) |
+| 33 | `mod-optimal-bot-raid` | Assemble et téléporte des groupes ou raids optimisés de 5 à 40 Playerbots avec répartition des rôles, synergies de buffs et niveaux configurables via `.botraid`. | [barnaclebarry/mod-optimal-bot-raid](https://github.com/barnaclebarry/mod-optimal-bot-raid) |
 
 ### Addons clients
 
